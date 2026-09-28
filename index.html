@@ -14,6 +14,7 @@
       --border: #334155;
       --danger: #ef4444;
       --success: #22c55e;
+      --water: #3b82f6;
     }
 
     body {
@@ -55,6 +56,52 @@
       margin-top: 0;
       margin-bottom: 12px;
       font-size: 18px;
+    }
+
+    /* Dashboard Metrics Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .metric-card {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .metric-card .title {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .metric-card .value {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--text);
+    }
+
+    /* Progress Bar */
+    .progress-bar-bg {
+      background: #0f172a;
+      border-radius: 8px;
+      height: 10px;
+      width: 100%;
+      overflow: hidden;
+      margin-top: 6px;
+      border: 1px solid var(--border);
+    }
+
+    .progress-bar-fill {
+      background: var(--water);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
     }
 
     /* Formulare & Eingaben */
@@ -155,7 +202,6 @@
       text-align: center;
     }
 
-    /* Huawei Health Style Erweiterung */
     .more-sports-box {
       border-top: 1px solid var(--border);
       padding-top: 12px;
@@ -208,16 +254,54 @@
       <h1>Andy's Health 📊</h1>
     </div>
 
-    <!-- Profil & Angaben -->
+    <!-- Tagesübersicht / Dashboard -->
     <div class="card">
-      <h2>👤 Mein Profil</h2>
-      <div class="form-group">
-        <input type="number" id="userHeight" placeholder="Größe (cm)" onchange="saveProfile()">
-        <input type="number" id="userAge" placeholder="Alter" onchange="saveProfile()">
+      <h2>🔥 Tagesübersicht</h2>
+      <div class="dashboard-grid">
+        <div class="metric-card">
+          <div class="title">Grundumsatz (BMR)</div>
+          <div class="value" id="bmrDisplay">-- kcal</div>
+        </div>
+        <div class="metric-card">
+          <div class="title">Ziel-Verbrauch</div>
+          <div class="value" id="targetCalDisplay">-- kcal</div>
+        </div>
+        <div class="metric-card">
+          <div class="title">Verbrannt (Aktivität)</div>
+          <div class="value" id="burnedCalDisplay">0 kcal</div>
+        </div>
+        <div class="metric-card">
+          <div class="title">Gesamtverbrauch</div>
+          <div class="value" id="totalCalDisplay">-- kcal</div>
+        </div>
+      </div>
+
+      <!-- Wasserstand -->
+      <div style="margin-top: 8px;">
+        <div style="display: flex; justify-content: space-between; font-size: 14px;">
+          <span>💧 Wasseraufnahme heute:</span>
+          <strong id="waterDisplay">0 / 2500 ml</strong>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="waterProgress"></div>
+        </div>
       </div>
     </div>
 
-    <!-- Gewicht stracken -->
+    <!-- Profil & Ziele -->
+    <div class="card">
+      <h2>👤 Mein Profil & Ziele</h2>
+      <div class="form-group">
+        <input type="number" id="userHeight" placeholder="Größe (cm)" onchange="updateProfile()">
+        <input type="number" id="userAge" placeholder="Alter" onchange="updateProfile()">
+      </div>
+      <div class="form-group">
+        <input type="number" id="targetCalories" placeholder="Ziel-Verbrauch (kcal)" onchange="updateProfile()">
+        <input type="number" id="targetWater" placeholder="Ziel-Wasser (ml)" onchange="updateProfile()">
+      </div>
+    </div>
+
+    <!-- Gewicht tracken -->
     <div class="card">
       <h2>⚖️ Gewicht tracken</h2>
       <div class="form-group">
@@ -227,11 +311,11 @@
       <div id="currentWeightDisplay" style="color: var(--text-muted); font-size: 14px; text-align: center; margin-top: 6px;"></div>
     </div>
 
-    <!-- Schnell-Tracking (Wasser & Mahlzeit) -->
+    <!-- Schnell-Tracking -->
     <div class="card">
       <h2>⚡ Schnell-Tracking</h2>
       <div class="quick-track-grid">
-        <div class="action-card" onclick="addLog('Wasser', '+250ml')">
+        <div class="action-card" onclick="addWater(250)">
           <span class="icon">💧</span>
           <span>Wasser (+250ml)</span>
         </div>
@@ -248,32 +332,32 @@
       
       <!-- Schnellzugriff -->
       <div class="activity-grid">
-        <button class="activity-btn" onclick="addLog('Sport', 'Slow Jogging 🏃‍♂️')">
+        <button class="activity-btn" onclick="addSportLog('Slow Jogging 🏃‍♂️', 300)">
           <span class="icon">🏃‍♂️</span>
           <span class="label">Slow Jogging</span>
         </button>
 
-        <button class="activity-btn" onclick="addLog('Sport', 'Paddel-Tennis 🎾')">
+        <button class="activity-btn" onclick="addSportLog('Paddel-Tennis 🎾', 400)">
           <span class="icon">🎾</span>
           <span class="label">Paddel-Tennis</span>
         </button>
 
-        <button class="activity-btn" onclick="addLog('Sport', 'Laufen 🏃')">
+        <button class="activity-btn" onclick="addSportLog('Laufen 🏃', 450)">
           <span class="icon">🏃</span>
           <span class="label">Laufen</span>
         </button>
 
-        <button class="activity-btn" onclick="addLog('Sport', 'Skifahren ⛷️')">
+        <button class="activity-btn" onclick="addSportLog('Skifahren ⛷️', 350)">
           <span class="icon">⛷️</span>
           <span class="label">Skifahren</span>
         </button>
 
-        <button class="activity-btn" onclick="addLog('Sport', 'Ergometer 🚴‍♂️')">
+        <button class="activity-btn" onclick="addSportLog('Ergometer 🚴‍♂️', 300)">
           <span class="icon">🚴‍♂️</span>
           <span class="label">Ergometer</span>
         </button>
 
-        <button class="activity-btn" onclick="addLog('Sport', 'Freeletics 🤸‍♂️')">
+        <button class="activity-btn" onclick="addSportLog('Freeletics 🤸‍♂️', 400)">
           <span class="icon">🤸‍♂️</span>
           <span class="label">Freeletics</span>
         </button>
@@ -284,24 +368,23 @@
         <h3>➕ Weitere Sportart hinzufügen</h3>
         <div class="form-group">
           <select id="moreSportsSelect">
-            <option value="🏊‍♂️ Schwimmen">🏊‍♂️ Schwimmen</option>
-            <option value="🥾 Wandern">🥾 Wandern</option>
-            <option value="🏋️‍♂️ Krafttraining">🏋️‍♂️ Krafttraining</option>
-            <option value="🚴‍♀️ Radfahren (Draußen)">🚴‍♀️ Radfahren (Draußen)</option>
-            <option value="🏸 Badminton">🏸 Badminton</option>
-            <option value="🧘‍♂️ Yoga">🧘‍♂️ Yoga</option>
-            <option value="🧘‍♀️ Pilates">🧘‍♀️ Pilates</option>
-            <option value="🏓 Tischtennis">🏓 Tischtennis</option>
-
-            <option value="🥊 Boxen">🥊 Boxen</option>
-            <option value="🛼 Inline-Skating">🛼 Inline-Skating</option>
-            <option value="🏋️‍♀️ Crossfit">🏋️‍♀️ Crossfit</option>
-            <option value="🏄‍♂️ Surfen">🏄‍♂️ Surfen</option>
-            <option value="🧗‍♂️ Klettern">🧗‍♂️ Klettern</option>
-            <option value="🕺 Tanzen">🕺 Tanzen</option>
-            <option value="⚽ Fußball">⚽ Fußball</option>
-            <option value="🏀 Basketball">🏀 Basketball</option>
-            <option value="🏐 Volleyball">🏐 Volleyball</option>
+            <option value="Schwimmen 🏊‍♂️" data-cal="400">🏊‍♂️ Schwimmen</option>
+            <option value="Wandern 🥾" data-cal="250">🥾 Wandern</option>
+            <option value="Krafttraining 🏋️‍♂️" data-cal="300">🏋️‍♂️ Krafttraining</option>
+            <option value="Radfahren 🚴‍♀️" data-cal="350">🚴‍♀️ Radfahren (Draußen)</option>
+            <option value="Badminton 🏸" data-cal="350">🏸 Badminton</option>
+            <option value="Yoga 🧘‍♂️" data-cal="180">🧘‍♂️ Yoga</option>
+            <option value="Pilates 🧘‍♀️" data-cal="200">🧘‍♀️ Pilates</option>
+            <option value="Tischtennis 🏓" data-cal="250">🏓 Tischtennis</option>
+            <option value="Boxen 🥊" data-cal="500">🥊 Boxen</option>
+            <option value="Inline-Skating 🛼" data-cal="350">🛼 Inline-Skating</option>
+            <option value="Crossfit 🏋️‍♀️" data-cal="500">🏋️‍♀️ Crossfit</option>
+            <option value="Surfen 🏄‍♂️" data-cal="300">🏄‍♂️ Surfen</option>
+            <option value="Klettern 🧗‍♂️" data-cal="400">🧗‍♂️ Klettern</option>
+            <option value="Tanzen 🕺" data-cal="250">🕺 Tanzen</option>
+            <option value="Fußball ⚽" data-cal="450">⚽ Fußball</option>
+            <option value="Basketball 🏀" data-cal="450">🏀 Basketball</option>
+            <option value="Volleyball 🏐" data-cal="300">🏐 Volleyball</option>
           </select>
         </div>
         <div class="form-group">
@@ -322,24 +405,59 @@
 
   <script>
     let logs = JSON.parse(localStorage.getItem('andys_health_logs')) || [];
+    let todayWater = parseInt(localStorage.getItem('andys_health_water_today')) || 0;
 
-    // Profil laden & speichern
+    function init() {
+      loadProfile();
+      renderLogs();
+      updateDashboard();
+    }
+
     function loadProfile() {
-      const height = localStorage.getItem('andys_health_height') || '';
-      const age = localStorage.getItem('andys_health_age') || '';
+      document.getElementById('userHeight').value = localStorage.getItem('andys_health_height') || 178;
+      document.getElementById('userAge').value = localStorage.getItem('andys_health_age') || 35;
+      document.getElementById('targetCalories').value = localStorage.getItem('andys_health_target_cal') || 2500;
+      document.getElementById('targetWater').value = localStorage.getItem('andys_health_target_water') || 2500;
+      
       const weight = localStorage.getItem('andys_health_weight') || '--';
-
-      document.getElementById('userHeight').value = height;
-      document.getElementById('userAge').value = age;
       document.getElementById('currentWeightDisplay').innerText = `Aktuelles Gewicht: ${weight} kg`;
     }
 
-    function saveProfile() {
-      const height = document.getElementById('userHeight').value;
-      const age = document.getElementById('userAge').value;
-      
-      localStorage.setItem('andys_health_height', height);
-      localStorage.setItem('andys_health_age', age);
+    function updateProfile() {
+      localStorage.setItem('andys_health_height', document.getElementById('userHeight').value);
+      localStorage.setItem('andys_health_age', document.getElementById('userAge').value);
+      localStorage.setItem('andys_health_target_cal', document.getElementById('targetCalories').value);
+      localStorage.setItem('andys_health_target_water', document.getElementById('targetWater').value);
+      updateDashboard();
+    }
+
+    function updateDashboard() {
+      const height = parseFloat(localStorage.getItem('andys_health_height')) || 178;
+      const age = parseFloat(localStorage.getItem('andys_health_age')) || 35;
+      const weight = parseFloat(localStorage.getItem('andys_health_weight')) || 75;
+      const targetCal = parseInt(localStorage.getItem('andys_health_target_cal')) || 2500;
+      const targetWater = parseInt(localStorage.getItem('andys_health_target_water')) || 2500;
+
+      // Harris-Benedict Formel (Männer Grundumsatz Näherung)
+      const bmr = Math.round(88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age));
+
+      // Verbrannte Kalorien aus den Logs berechnen
+      let burnedCal = 0;
+      logs.forEach(log => {
+        if (log.cal) burnedCal += parseInt(log.cal);
+      });
+
+      const totalCal = bmr + burnedCal;
+
+      document.getElementById('bmrDisplay').innerText = `${bmr} kcal`;
+      document.getElementById('targetCalDisplay').innerText = `${targetCal} kcal`;
+      document.getElementById('burnedCalDisplay').innerText = `${burnedCal} kcal`;
+      document.getElementById('totalCalDisplay').innerText = `${totalCal} kcal`;
+
+      // Wasser
+      document.getElementById('waterDisplay').innerText = `${todayWater} / ${targetWater} ml`;
+      const waterPct = Math.min(100, Math.round((todayWater / targetWater) * 100));
+      document.getElementById('waterProgress').style.width = `${waterPct}%`;
     }
 
     function addWeight() {
@@ -347,26 +465,37 @@
       if (!weightVal) return;
 
       localStorage.setItem('andys_health_weight', weightVal);
-      addLog('Gewicht', `${weightVal} kg`);
+      addLog('Gewicht', `${weightVal} kg`, 0);
       document.getElementById('weightInput').value = '';
       loadProfile();
+      updateDashboard();
     }
 
-    // Zusätzliche Sportart hinzufügen
+    function addWater(amount) {
+      todayWater += amount;
+      localStorage.setItem('andys_health_water_today', todayWater);
+      addLog('Wasser', `+${amount} ml`, 0);
+      updateDashboard();
+    }
+
+    function addSportLog(sportName, estCalPerHour) {
+      const cal = Math.round(estCalPerHour * 0.75); // Standard ca. 45 Min Annahme bei Schnellauswahl
+      addLog('Sport', `${sportName} (~${cal} kcal)`, cal);
+      updateDashboard();
+    }
+
     function addCustomSport() {
-      const sportSelect = document.getElementById('moreSportsSelect');
-      const durationInput = document.getElementById('sportDuration');
-      
-      const sportName = sportSelect.value;
-      const duration = durationInput.value;
+      const select = document.getElementById('moreSportsSelect');
+      const duration = parseInt(document.getElementById('sportDuration').value) || 30;
+      const option = select.options[select.selectedIndex];
+      const calPerHour = parseInt(option.getAttribute('data-cal')) || 300;
 
-      let logText = sportName;
-      if (duration) {
-        logText += ` (${duration} Min)`;
-      }
+      const cal = Math.round((calPerHour / 60) * duration);
+      const sportName = select.value;
 
-      addLog('Sport', logText);
-      durationInput.value = '';
+      addLog('Sport', `${sportName} (${duration} Min, ~${cal} kcal)`, cal);
+      document.getElementById('sportDuration').value = '';
+      updateDashboard();
     }
 
     // Protokoll-Verwaltung
@@ -387,7 +516,7 @@
             <strong>${log.kat}:</strong> ${log.text}
           </div>
           <div class="log-actions">
-            <button class="btn-sm btn-edit" onclick="editLog(${index})">✏️ Bearbeiten</button>
+            <button class="btn-sm btn-edit" onclick="editLog(${index})">✏️</button>
             <button class="btn-sm btn-delete" onclick="deleteLog(${index})">🗑️</button>
           </div>
         `;
@@ -397,8 +526,8 @@
       localStorage.setItem('andys_health_logs', JSON.stringify(logs));
     }
 
-    function addLog(kat, text) {
-      logs.unshift({ kat, text });
+    function addLog(kat, text, cal = 0) {
+      logs.unshift({ kat, text, cal });
       renderLogs();
     }
 
@@ -407,6 +536,7 @@
       if (newText !== null && newText.trim() !== "") {
         logs[index].text = newText;
         renderLogs();
+        updateDashboard();
       }
     }
 
@@ -414,6 +544,7 @@
       if (confirm("Eintrag löschen?")) {
         logs.splice(index, 1);
         renderLogs();
+        updateDashboard();
       }
     }
 
@@ -422,8 +553,7 @@
     }
 
     // Initialisierung
-    loadProfile();
-    renderLogs();
+    init();
   </script>
 </body>
 </html>
