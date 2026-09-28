@@ -8,12 +8,11 @@
     :root {
       --bg: #0f172a;
       --card-bg: #1e293b;
-      --primary: #3b82f6;
+      --primary: #2563eb;
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --border: #334155;
       --danger: #ef4444;
-      --success: #10b981;
     }
 
     body {
@@ -44,38 +43,6 @@
       font-size: 24px;
     }
 
-    /* Kachel-Navigation am Startbildschirm */
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    .nav-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-      text-align: center;
-      cursor: pointer;
-      transition: transform 0.1s;
-    }
-
-    .nav-card:active {
-      transform: scale(0.96);
-    }
-
-    .nav-card .icon {
-      font-size: 32px;
-      display: block;
-      margin-bottom: 6px;
-    }
-
-    .nav-card .title {
-      font-weight: 600;
-      font-size: 15px;
-    }
-
     .card {
       background: var(--card-bg);
       border-radius: 16px;
@@ -85,56 +52,80 @@
 
     .card h2 {
       margin-top: 0;
+      margin-bottom: 12px;
       font-size: 18px;
     }
 
-    /* Modal / Formular-Bereich */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.8);
-      padding: 20px;
+    /* Schnell-Tracking Grid */
+    .quick-track-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .action-card {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    .action-card:active {
+      transform: scale(0.97);
+    }
+
+    .action-card .icon {
+      font-size: 32px;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .action-card span {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* Sport-Aktivitäten Grid */
+    .activity-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .activity-btn {
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      z-index: 100;
-    }
-
-    .modal-content {
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 20px;
-      width: 100%;
-      max-width: 400px;
+      padding: 12px 6px;
       border: 1px solid var(--border);
-    }
-
-    input, select, button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 8px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
+      border-radius: 12px;
       background: #0f172a;
-      color: white;
-      box-sizing: border-box;
-      font-size: 15px;
+      color: var(--text);
+      cursor: pointer;
+      transition: transform 0.1s ease;
     }
 
-    button.btn-primary {
-      background: var(--primary);
-      border: none;
-      font-weight: bold;
-      margin-top: 16px;
+    .activity-btn:active {
+      transform: scale(0.95);
+      background-color: #1e293b;
     }
 
-    button.btn-secondary {
-      background: transparent;
-      border: 1px solid var(--border);
-      margin-top: 8px;
+    .activity-btn .icon {
+      font-size: 26px;
+      margin-bottom: 4px;
     }
 
-    /* Einträge verwalten & korrigieren */
+    .activity-btn span.label {
+      font-size: 12px;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    /* Einträge korrigieren */
     .log-item {
       display: flex;
       justify-content: space-between;
@@ -153,10 +144,12 @@
     }
 
     .btn-sm {
-      width: auto;
       padding: 6px 10px;
       font-size: 12px;
-      margin: 0;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      color: white;
     }
 
     .btn-edit { background: var(--primary); }
@@ -167,79 +160,68 @@
 
   <div class="app-container">
     
+    <!-- Header -->
     <div class="header">
       <h1>Andy's Health 📊</h1>
     </div>
 
-    <!-- Startbildschirm Navigation -->
-    <div class="dashboard-grid">
-      <div class="nav-card" onclick="openModal('profilModal')">
-        <span class="icon">👤</span>
-        <span class="title">Profil</span>
-      </div>
-      <div class="nav-card" onclick="openModal('sportModal')">
-        <span class="icon">🏃‍♂️</span>
-        <span class="title">Sport</span>
-      </div>
-      <div class="nav-card" onclick="openModal('ernaehrungModal')">
-        <span class="icon">🥗</span>
-        <span class="title">Ernährung</span>
-      </div>
-      <div class="nav-card" onclick="quickWater()">
-        <span class="icon">💧</span>
-        <span class="title">Wasser (+250ml)</span>
-      </div>
-    </div>
-
-    <!-- Tages-Protokoll mit Manuelle Korrektur -->
+    <!-- Schnell-Tracking (Wasser & Mahlzeit) -->
     <div class="card">
-      <h2>Einträge verwalten & korrigieren</h2>
-      <div id="logList">
-        <!-- Dynamische Einträge -->
+      <h2>⚡ Schnell-Tracking</h2>
+      <div class="quick-track-grid">
+        <div class="action-card" onclick="addLog('Wasser', '+250ml')">
+          <span class="icon">💧</span>
+          <span>Wasser (+250ml)</span>
+        </div>
+        <div class="action-card" onclick="openCamera()">
+          <span class="icon">📸</span>
+          <span>Mahlzeit (KI)</span>
+        </div>
       </div>
     </div>
 
-  </div>
+    <!-- Aktivität tracken -->
+    <div class="card">
+      <h2>🏃‍♂️ Aktivität tracken</h2>
+      <div class="activity-grid">
+        <button class="activity-btn" onclick="addLog('Sport', 'Slow Jogging 🏃‍♂️')">
+          <span class="icon">🏃‍♂️</span>
+          <span class="label">Slow Jogging</span>
+        </button>
 
-  <!-- MODAL: Profil -->
-  <div id="profilModal" class="modal">
-    <div class="modal-content">
-      <h2>Profil anpassen</h2>
-      <label>Gewicht (kg):</label>
-      <input type="number" id="userWeight" value="80">
-      <label>Ziel Kalorien (kcal):</label>
-      <input type="number" id="userCalGoal" value="2200">
-      <button class="btn-primary" onclick="closeModal('profilModal')">Speichern</button>
-    </div>
-  </div>
+        <button class="activity-btn" onclick="addLog('Sport', 'Paddel-Tennis 🎾')">
+          <span class="icon">🎾</span>
+          <span class="label">Paddel-Tennis</span>
+        </button>
 
-  <!-- MODAL: Sport -->
-  <div id="sportModal" class="modal">
-    <div class="modal-content">
-      <h2>Sport eintragen</h2>
-      <select id="sportType">
-        <option value="Slow Jogging 🏃‍♂️">Slow Jogging 🏃‍♂️</option>
-        <option value="Paddel-Tennis 🎾">Paddel-Tennis 🎾</option>
-        <option value="Laufen 🏃">Laufen 🏃</option>
-        <option value="Skifahren ⛷️">Skifahren ⛷️</option>
-        <option value="Ergometer 🚴‍♂️">Ergometer 🚴‍♂️</option>
-        <option value="Freeletics 🤸‍♂️">Freeletics 🤸‍♂️</option>
-      </select>
-      <input type="number" id="sportDauer" placeholder="Dauer in Minuten">
-      <button class="btn-primary" onclick="addLog('Sport', getSportVal())">Hinzufügen</button>
-      <button class="btn-secondary" onclick="closeModal('sportModal')">Abbrechen</button>
-    </div>
-  </div>
+        <button class="activity-btn" onclick="addLog('Sport', 'Laufen 🏃')">
+          <span class="icon">🏃</span>
+          <span class="label">Laufen</span>
+        </button>
 
-  <!-- MODAL: Ernährung -->
-  <div id="ernaehrungModal" class="modal">
-    <div class="modal-content">
-      <h2>Ernährung eintragen</h2>
-      <input type="text" id="foodName" placeholder="Mahlzeit (z. B. Mittagessen)">
-      <input type="number" id="foodCal" placeholder="Kalorien (kcal)">
-      <button class="btn-primary" onclick="addErnaehrung()">Hinzufügen</button>
-      <button class="btn-secondary" onclick="closeModal('ernaehrungModal')">Abbrechen</button>
+        <button class="activity-btn" onclick="addLog('Sport', 'Skifahren ⛷️')">
+          <span class="icon">⛷️</span>
+          <span class="label">Skifahren</span>
+        </button>
+
+        <button class="activity-btn" onclick="addLog('Sport', 'Ergometer 🚴‍♂️')">
+          <span class="icon">🚴‍♂️</span>
+          <span class="label">Ergometer</span>
+        </button>
+
+        <button class="activity-btn" onclick="addLog('Sport', 'Freeletics 🤸‍♂️')">
+          <span class="icon">🤸‍♂️</span>
+          <span class="label">Freeletics</span>
+        </button>
+      </div>
     </div>
+
+    <!-- Protokoll / Korrektur-Bereich -->
+    <div class="card">
+      <h2>✏️ Einträge verwalten & korrigieren</h2>
+      <div id="logList"></div>
+    </div>
+
   </div>
 
   <script>
@@ -262,7 +244,7 @@
             <strong>${log.kat}:</strong> ${log.text}
           </div>
           <div class="log-actions">
-            <button class="btn-sm btn-edit" onclick="editLog(${index})">✏️ Edit</button>
+            <button class="btn-sm btn-edit" onclick="editLog(${index})">✏️ Bearbeiten</button>
             <button class="btn-sm btn-delete" onclick="deleteLog(${index})">🗑️</button>
           </div>
         `;
@@ -275,44 +257,25 @@
     function addLog(kat, text) {
       logs.unshift({ kat, text });
       renderLogs();
-      closeAllModals();
-    }
-
-    function quickWater() {
-      addLog('Wasser', '+250 ml');
-    }
-
-    function getSportVal() {
-      const type = document.getElementById('sportType').value;
-      const dauer = document.getElementById('sportDauer').value || '30';
-      return `${type} (${dauer} Min)`;
-    }
-
-    function addErnaehrung() {
-      const name = document.getElementById('foodName').value || 'Mahlzeit';
-      const cal = document.getElementById('foodCal').value || '0';
-      addLog('Ernährung', `${name} - ${cal} kcal`);
     }
 
     function editLog(index) {
-      const newText = prompt("Eintrag manuell korrigieren:", logs[index].text);
-      if (newText !== null) {
+      const newText = prompt("Eintrag korrigieren:", logs[index].text);
+      if (newText !== null && newText.trim() !== "") {
         logs[index].text = newText;
         renderLogs();
       }
     }
 
     function deleteLog(index) {
-      if (confirm("Diesen Eintrag löschen?")) {
+      if (confirm("Eintrag löschen?")) {
         logs.splice(index, 1);
         renderLogs();
       }
     }
 
-    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-    function closeAllModals() {
-      document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+    function openCamera() {
+      alert("Kamera/Foto-Analyse wird geöffnet... 📸");
     }
 
     renderLogs();
