@@ -120,7 +120,7 @@
     .form-row { display: flex; gap: 8px; }
     .form-group label { font-size: 12px; color: var(--text-muted); }
 
-    .form-group input, .form-group select {
+    .form-group input, .form-group select, .form-group textarea {
       width: 100%;
       padding: 10px;
       border-radius: 8px;
@@ -128,6 +128,7 @@
       background: #0f172a;
       color: var(--text);
       font-size: 14px;
+      font-family: inherit;
     }
 
     .btn-main {
@@ -144,8 +145,9 @@
 
     .quick-track-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 8px;
+      margin-bottom: 8px;
     }
 
     .action-card {
@@ -159,7 +161,7 @@
     }
 
     .action-card:active { transform: scale(0.97); }
-    .action-card .icon { font-size: 26px; display: block; margin-bottom: 4px; }
+    .action-card .icon { font-size: 24px; display: block; margin-bottom: 4px; }
     .action-card span { font-size: 12px; font-weight: 600; }
 
     .activity-grid {
@@ -218,6 +220,26 @@
     .btn-edit { background: var(--primary); }
     .btn-delete { background: var(--danger); }
 
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.9);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      width: 100%;
+      max-width: 400px;
+    }
+
     .loading-overlay {
       display: none;
       position: fixed;
@@ -235,16 +257,37 @@
 </head>
 <body>
 
-  <!-- Input für direkte Kameraaufnahme -->
   <input type="file" id="cameraImageInput" accept="image/*" capture="environment" style="display: none;" onchange="handleMealImage(event)">
-  <!-- Input für Galerieauswahl -->
   <input type="file" id="galleryImageInput" accept="image/*" style="display: none;" onchange="handleMealImage(event)">
 
   <!-- Loading Overlay -->
   <div id="loadingOverlay" class="loading-overlay">
     <div style="font-size: 36px; margin-bottom: 12px;">🔍🤖</div>
     <div style="font-size: 16px; font-weight: bold;">Mahlzeit wird per Gemini KI analysiert...</div>
-    <div style="font-size: 12px; color: var(--text-muted); margin-top: 8px;" id="loadingStatusText">Anfrage wird an KI gesendet...</div>
+    <div style="font-size: 12px; color: var(--text-muted); margin-top: 8px;" id="loadingStatusText">Anfrage läuft...</div>
+  </div>
+
+  <!-- Modal für Manuelle Mahlzeiteingabe -->
+  <div id="manualMealModal" class="modal">
+    <div class="modal-content">
+      <h2 style="margin-top:0;">🥗 Mahlzeit manuell eintragen</h2>
+      <p style="font-size: 12px; color: var(--text-muted);">Trage deine Zutaten oder deine Speise ein:</p>
+
+      <div class="form-group">
+        <label>Beschreibung / Zutaten</label>
+        <textarea id="manualMealText" rows="4" placeholder="z. B.&#10;40 g Kürbis&#10;30 g Zwiebel&#10;20 g Olivenöl"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Geschätzte/Berechnete Kalorien (optional in kcal)</label>
+        <input type="number" id="manualMealCal" placeholder="z. B. 250">
+      </div>
+
+      <div class="form-row" style="margin-top: 14px;">
+        <button class="btn-main" style="background: var(--border);" onclick="closeManualMealModal()">Abbrechen</button>
+        <button class="btn-main" onclick="saveManualMeal()">Speichern</button>
+      </div>
+    </div>
   </div>
 
   <div class="app-container">
@@ -294,6 +337,10 @@
           <div class="action-card" onclick="addWater(250)">
             <span class="icon">💧</span>
             <span>Wasser (+250ml)</span>
+          </div>
+          <div class="action-card" onclick="openManualMealModal()">
+            <span class="icon">✍️</span>
+            <span>Essen (Manuell)</span>
           </div>
           <div class="action-card" onclick="openCamera(true)">
             <span class="icon">📸</span>
@@ -599,6 +646,34 @@
       updateDashboard();
     }
 
+    /* MANUELLE MAHLZEIT FUNKTIONEN */
+    function openManualMealModal(initialText = '') {
+      document.getElementById('manualMealText').value = initialText;
+      document.getElementById('manualMealCal').value = '';
+      document.getElementById('manualMealModal').style.display = 'flex';
+    }
+
+    function closeManualMealModal() {
+      document.getElementById('manualMealModal').style.display = 'none';
+    }
+
+    function saveManualMeal() {
+      const text = document.getElementById('manualMealText').value.trim();
+      const cal = parseInt(document.getElementById('manualMealCal').value) || 0;
+
+      if (!text) {
+        alert("Bitte mindestens eine Speise oder Zutaten eingeben.");
+        return;
+      }
+
+      const formattedText = text.replace(/\n/g, ', ');
+      const calInfo = cal > 0 ? ` (~${cal} kcal)` : '';
+      
+      addLog('Mahlzeit (Manuell)', `${formattedText}${calInfo}`, 0);
+      closeManualMealModal();
+      updateDashboard();
+    }
+
     function renderLogs() {
       const container = document.getElementById('logList');
       container.innerHTML = '';
@@ -668,10 +743,7 @@
       if (!file) return;
 
       const apiKey = getActiveApiKey();
-      if (!apiKey) {
-        alert("Kein API-Key vorhanden!");
-        return;
-      }
+      if (!apiKey) return;
 
       const statusText = document.getElementById('loadingStatusText');
       document.getElementById('loadingOverlay').style.display = 'flex';
@@ -684,22 +756,15 @@
         const resultText = await callGeminiWithFallback(apiKey, base64Data, file.type || "image/jpeg", statusText);
         
         if (resultText) {
-          // Versuche Kalorienzahl aus Text zu extrahieren (z. B. 450 kcal)
-          let extractedCal = 0;
-          const calMatch = resultText.match(/(\d+)\s*kcal/i);
-          if (calMatch && calMatch[1]) {
-            extractedCal = parseInt(calMatch[1]);
-          }
-
-          addLog('Mahlzeit (KI)', resultText, 0); // 0 Kalorien als Verbrauch, aber protokolliert
+          addLog('Mahlzeit (KI)', resultText, 0);
           updateDashboard();
-        } else {
-          alert("Es konnte kein Ergebnis geliefert werden.");
         }
 
       } catch (err) {
         console.error(err);
-        alert("Fehler bei der KI-Anfrage: " + err.message);
+        if (confirm("KI ist ausgelastet oder nicht erreichbar. Möchtest du die Mahlzeit manuell eingeben?")) {
+          openManualMealModal();
+        }
       } finally {
         document.getElementById('loadingOverlay').style.display = 'none';
         event.target.value = '';
@@ -707,7 +772,6 @@
     }
 
     async function callGeminiWithFallback(apiKey, base64Data, mimeType, statusText) {
-      // Aktuell verfügbare Modell-Reihenfolge
       const models = ['gemini-2.5-flash', 'gemini-3.8-flash', 'gemini-3.5-flash-lite'];
       const promptText = "Analysiere diese Mahlzeit kurz in einem Satz: Nenne die Speise und schätze die Kalorien (z.B. 'Teller Pasta Bolognese (~650 kcal)').";
 
@@ -731,20 +795,17 @@
 
           const data = await response.json();
 
-          if (data.error) {
-            console.warn(`Fehler mit Modell ${model}:`, data.error.message);
-            continue; // Bei Quota-/Überlastungsfehler zum nächsten Modell wechseln
-          }
+          if (data.error) continue;
 
           if (data.candidates && data.candidates[0].content.parts[0].text) {
             return data.candidates[0].content.parts[0].text.trim();
           }
         } catch (e) {
-          console.warn(`Netzwerk- oder API-Fehler mit ${model}:`, e);
+          console.warn(`Fehler mit ${model}`, e);
         }
       }
       
-      throw new Error("Alle KI-Modelle sind im Free Tier momentan ausgelastet oder überlastet. Bitte versuche es in wenigen Minuten erneut.");
+      throw new Error("Free Tier überlastet");
     }
 
     function fileToBase64(file) {
