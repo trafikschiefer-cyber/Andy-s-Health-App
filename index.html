@@ -27,7 +27,7 @@
       background-color: var(--bg);
       color: var(--text);
       margin: 0;
-      padding: 0 0 70px 0; /* Platz für Untermenü/Tab-Leiste */
+      padding: 0 0 70px 0;
       display: flex;
       justify-content: center;
     }
@@ -51,7 +51,6 @@
       font-size: 24px;
     }
 
-    /* Tab-Steuerung */
     .tab-content {
       display: none;
       flex-direction: column;
@@ -97,7 +96,6 @@
       font-weight: bold;
     }
 
-    /* Cards & Layout */
     .card {
       background: var(--card-bg);
       border-radius: 16px;
@@ -111,7 +109,6 @@
       font-size: 18px;
     }
 
-    /* Dashboard Metrics Grid */
     .dashboard-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -139,7 +136,6 @@
       color: var(--text);
     }
 
-    /* Progress Bar */
     .progress-bar-bg {
       background: #0f172a;
       border-radius: 8px;
@@ -157,7 +153,6 @@
       transition: width 0.3s ease;
     }
 
-    /* Formulare & Eingaben */
     .form-group {
       display: flex;
       gap: 8px;
@@ -197,7 +192,6 @@
       text-align: center;
     }
 
-    /* Schnell-Tracking Grid */
     .quick-track-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -229,7 +223,6 @@
       font-weight: 600;
     }
 
-    /* Sport-Aktivitäten Grid */
     .activity-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -279,7 +272,6 @@
       margin: 0 0 10px 0;
     }
 
-    /* Einträge korrigieren & Historie */
     .log-item {
       display: flex;
       justify-content: space-between;
@@ -314,15 +306,13 @@
 
   <div class="app-container">
     
-    <!-- Header -->
     <div class="header">
       <h1>Andy's Health 📊</h1>
     </div>
 
-    <!-- ==================== TAB 1: TRACKING & DASHBOARD ==================== -->
+    <!-- TAB 1: TRACKING & DASHBOARD -->
     <div id="tab-tracking" class="tab-content active">
       
-      <!-- Tagesübersicht / Dashboard -->
       <div class="card">
         <h2>🔥 Tagesübersicht</h2>
         <div class="dashboard-grid">
@@ -344,7 +334,6 @@
           </div>
         </div>
 
-        <!-- Wasserstand -->
         <div style="margin-top: 8px;">
           <div style="display: flex; justify-content: space-between; font-size: 14px;">
             <span>💧 Wasseraufnahme heute:</span>
@@ -356,7 +345,6 @@
         </div>
       </div>
 
-      <!-- Schnell-Tracking -->
       <div class="card">
         <h2>⚡ Schnell-Tracking</h2>
         <div class="quick-track-grid">
@@ -371,11 +359,9 @@
         </div>
       </div>
 
-      <!-- Aktivität tracken -->
       <div class="card">
         <h2>🏃‍♂️ Aktivität tracken</h2>
         
-        <!-- Schnellzugriff -->
         <div class="activity-grid">
           <button class="activity-btn" onclick="addQuickSport('Slow Jogging 🏃‍♂️', 6.0)">
             <span class="icon">🏃‍♂️</span>
@@ -408,7 +394,6 @@
           </button>
         </div>
 
-        <!-- Weitere Sportarten (Huawei Health Style) -->
         <div class="more-sports-box">
           <h3>➕ Weitere Sportart wählen</h3>
           <div class="form-group">
@@ -436,7 +421,6 @@
 
       </div>
 
-      <!-- Protokoll / Korrektur-Bereich -->
       <div class="card">
         <h2>✏️ Tagesprotokoll verwalten</h2>
         <div id="logList"></div>
@@ -444,11 +428,9 @@
 
     </div>
 
-
-    <!-- ==================== TAB 2: PROFIL & EINSTELLUNGEN ==================== -->
+    <!-- TAB 2: PROFIL & EINSTELLUNGEN -->
     <div id="tab-profile" class="tab-content">
       
-      <!-- Persönliche Daten -->
       <div class="card">
         <h2>👤 Körperwerte</h2>
         <div class="form-group">
@@ -468,7 +450,6 @@
         </div>
       </div>
 
-      <!-- Gewichtsmanagement -->
       <div class="card">
         <h2>⚖️ Gewichtsverlauf</h2>
         <div class="form-group">
@@ -482,7 +463,6 @@
         <div id="weightHistoryList"></div>
       </div>
 
-      <!-- Tagesziele -->
       <div class="card">
         <h2>🎯 Meine Tagesziele</h2>
         <div class="form-group">
@@ -495,12 +475,11 @@
         </div>
       </div>
 
-      <!-- Schnittstellen & API -->
       <div class="card">
         <h2>⚙️ KI & API Einstellungen</h2>
         <div class="form-group">
           <label>Gemini API-Key (für Kamera-Mahlzeitenanalyse)</label>
-          <input type="password" id="apiKeyInput" placeholder="AIzaSy..." onchange="saveApiKey()">
+          <input type="password" id="apiKeyInput" placeholder="Hier deinen API Key eingeben..." onchange="saveApiKey()">
         </div>
       </div>
 
@@ -508,7 +487,6 @@
 
   </div>
 
-  <!-- Bottom Navigation -->
   <nav class="bottom-nav">
     <button class="nav-btn active" id="btn-tab-tracking" onclick="switchTab('tracking')">
       <span class="nav-icon">📊</span>
@@ -532,7 +510,6 @@
       updateDashboard();
     }
 
-    // Tab-Wechsel
     function switchTab(tabName) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
@@ -541,7 +518,6 @@
       document.getElementById(`btn-tab-${tabName}`).classList.add('active');
     }
 
-    // Profil & Einstellungen
     function loadProfile() {
       document.getElementById('userHeight').value = localStorage.getItem('andys_health_height') || 178;
       document.getElementById('userAge').value = localStorage.getItem('andys_health_age') || 35;
@@ -564,11 +540,15 @@
     }
 
     function saveApiKey() {
-      localStorage.setItem('andys_health_api_key', document.getElementById('apiKeyInput').value);
+      const val = document.getElementById('apiKeyInput').value.trim();
+      localStorage.setItem('andys_health_api_key', val);
       alert("API Key gespeichert!");
     }
 
-    // Dashboard & Grundumsatz-Berechnung
+    function getActiveApiKey() {
+      return localStorage.getItem('andys_health_api_key') || '';
+    }
+
     function updateDashboard() {
       const height = parseFloat(localStorage.getItem('andys_health_height')) || 178;
       const age = parseFloat(localStorage.getItem('andys_health_age')) || 35;
@@ -577,12 +557,10 @@
       const targetCal = parseInt(localStorage.getItem('andys_health_target_cal')) || 2500;
       const targetWater = parseInt(localStorage.getItem('andys_health_target_water')) || 2500;
 
-      // Mifflins-St.Jeor Formel für Grundumsatz
       let bmr = (10 * weight) + (6.25 * height) - (5 * age);
       bmr = (gender === 'male') ? bmr + 5 : bmr - 161;
       bmr = Math.round(bmr);
 
-      // Verbrannte Kalorien aus den Aktivitäten berechnen
       let burnedCal = 0;
       logs.forEach(log => {
         if (log.cal) burnedCal += parseInt(log.cal);
@@ -595,13 +573,11 @@
       document.getElementById('burnedCalDisplay').innerText = `${burnedCal} kcal`;
       document.getElementById('totalCalDisplay').innerText = `${totalCal} kcal`;
 
-      // Wasseranzeige
       document.getElementById('waterDisplay').innerText = `${todayWater} / ${targetWater} ml`;
       const waterPct = Math.min(100, Math.round((todayWater / targetWater) * 100));
       document.getElementById('waterProgress').style.width = `${waterPct}%`;
     }
 
-    // Gewichts-Tracking mit Historie
     function addWeight() {
       const weightVal = parseFloat(document.getElementById('weightInput').value);
       if (!weightVal) return;
@@ -636,7 +612,6 @@
       });
     }
 
-    // Wasser-Tracking
     function addWater(amount) {
       todayWater += amount;
       localStorage.setItem('andys_health_water_today', todayWater);
@@ -644,10 +619,8 @@
       updateDashboard();
     }
 
-    // Kalorienberechnung per MET-Wert & Dauer
     function calculateCalories(met, durationMinutes) {
       const weight = parseFloat(localStorage.getItem('andys_health_weight')) || 75;
-      // Formel: (MET * 3.5 * Gewicht in kg / 200) * Minuten
       return Math.round((met * 3.5 * weight / 200) * durationMinutes);
     }
 
@@ -679,7 +652,6 @@
       updateDashboard();
     }
 
-    // Log-Verwaltung (Tagesprotokoll)
     function renderLogs() {
       const container = document.getElementById('logList');
       container.innerHTML = '';
@@ -730,7 +702,7 @@
     }
 
     function openCamera() {
-      const apiKey = localStorage.getItem('andys_health_api_key');
+      const apiKey = getActiveApiKey();
       if (!apiKey) {
         alert("Bitte trage zuerst im Reiter 'Profil & Ziele' deinen Gemini API-Key ein!");
         switchTab('profile');
@@ -739,7 +711,6 @@
       alert("Kamera/Foto-Analyse wird gestartet... 📸");
     }
 
-    // Starten
     init();
   </script>
 </body>
