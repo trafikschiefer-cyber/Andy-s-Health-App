@@ -13,6 +13,7 @@
       --text-muted: #94a3b8;
       --border: #334155;
       --danger: #ef4444;
+      --success: #22c55e;
     }
 
     body {
@@ -56,6 +57,34 @@
       font-size: 18px;
     }
 
+    /* Formulare & Eingaben */
+    .form-group {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .form-group input, .form-group select {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #0f172a;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .btn-main {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: var(--primary);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
     /* Schnell-Tracking Grid */
     .quick-track-grid {
       display: grid;
@@ -93,6 +122,7 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
+      margin-bottom: 14px;
     }
 
     .activity-btn {
@@ -123,6 +153,19 @@
       font-size: 12px;
       font-weight: 500;
       text-align: center;
+    }
+
+    /* Huawei Health Style Erweiterung */
+    .more-sports-box {
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      margin-top: 8px;
+    }
+
+    .more-sports-box h3 {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin: 0 0 10px 0;
     }
 
     /* Einträge korrigieren */
@@ -165,6 +208,25 @@
       <h1>Andy's Health 📊</h1>
     </div>
 
+    <!-- Profil & Angaben -->
+    <div class="card">
+      <h2>👤 Mein Profil</h2>
+      <div class="form-group">
+        <input type="number" id="userHeight" placeholder="Größe (cm)" onchange="saveProfile()">
+        <input type="number" id="userAge" placeholder="Alter" onchange="saveProfile()">
+      </div>
+    </div>
+
+    <!-- Gewicht stracken -->
+    <div class="card">
+      <h2>⚖️ Gewicht tracken</h2>
+      <div class="form-group">
+        <input type="number" id="weightInput" step="0.1" placeholder="Neues Gewicht (kg)">
+        <button class="btn-main" style="width: auto; padding: 0 16px;" onclick="addWeight()">Speichern</button>
+      </div>
+      <div id="currentWeightDisplay" style="color: var(--text-muted); font-size: 14px; text-align: center; margin-top: 6px;"></div>
+    </div>
+
     <!-- Schnell-Tracking (Wasser & Mahlzeit) -->
     <div class="card">
       <h2>⚡ Schnell-Tracking</h2>
@@ -183,6 +245,8 @@
     <!-- Aktivität tracken -->
     <div class="card">
       <h2>🏃‍♂️ Aktivität tracken</h2>
+      
+      <!-- Schnellzugriff -->
       <div class="activity-grid">
         <button class="activity-btn" onclick="addLog('Sport', 'Slow Jogging 🏃‍♂️')">
           <span class="icon">🏃‍♂️</span>
@@ -214,6 +278,38 @@
           <span class="label">Freeletics</span>
         </button>
       </div>
+
+      <!-- Weitere Sportarten (Huawei Health Style) -->
+      <div class="more-sports-box">
+        <h3>➕ Weitere Sportart hinzufügen</h3>
+        <div class="form-group">
+          <select id="moreSportsSelect">
+            <option value="🏊‍♂️ Schwimmen">🏊‍♂️ Schwimmen</option>
+            <option value="🥾 Wandern">🥾 Wandern</option>
+            <option value="🏋️‍♂️ Krafttraining">🏋️‍♂️ Krafttraining</option>
+            <option value="🚴‍♀️ Radfahren (Draußen)">🚴‍♀️ Radfahren (Draußen)</option>
+            <option value="🏸 Badminton">🏸 Badminton</option>
+            <option value="🧘‍♂️ Yoga">🧘‍♂️ Yoga</option>
+            <option value="🧘‍♀️ Pilates">🧘‍♀️ Pilates</option>
+            <option value="🏓 Tischtennis">🏓 Tischtennis</option>
+
+            <option value="🥊 Boxen">🥊 Boxen</option>
+            <option value="🛼 Inline-Skating">🛼 Inline-Skating</option>
+            <option value="🏋️‍♀️ Crossfit">🏋️‍♀️ Crossfit</option>
+            <option value="🏄‍♂️ Surfen">🏄‍♂️ Surfen</option>
+            <option value="🧗‍♂️ Klettern">🧗‍♂️ Klettern</option>
+            <option value="🕺 Tanzen">🕺 Tanzen</option>
+            <option value="⚽ Fußball">⚽ Fußball</option>
+            <option value="🏀 Basketball">🏀 Basketball</option>
+            <option value="🏐 Volleyball">🏐 Volleyball</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <input type="number" id="sportDuration" placeholder="Dauer in Min (z.B. 45)">
+          <button class="btn-main" style="width: auto; padding: 0 16px;" onclick="addCustomSport()">Tracken</button>
+        </div>
+      </div>
+
     </div>
 
     <!-- Protokoll / Korrektur-Bereich -->
@@ -227,6 +323,53 @@
   <script>
     let logs = JSON.parse(localStorage.getItem('andys_health_logs')) || [];
 
+    // Profil laden & speichern
+    function loadProfile() {
+      const height = localStorage.getItem('andys_health_height') || '';
+      const age = localStorage.getItem('andys_health_age') || '';
+      const weight = localStorage.getItem('andys_health_weight') || '--';
+
+      document.getElementById('userHeight').value = height;
+      document.getElementById('userAge').value = age;
+      document.getElementById('currentWeightDisplay').innerText = `Aktuelles Gewicht: ${weight} kg`;
+    }
+
+    function saveProfile() {
+      const height = document.getElementById('userHeight').value;
+      const age = document.getElementById('userAge').value;
+      
+      localStorage.setItem('andys_health_height', height);
+      localStorage.setItem('andys_health_age', age);
+    }
+
+    function addWeight() {
+      const weightVal = document.getElementById('weightInput').value;
+      if (!weightVal) return;
+
+      localStorage.setItem('andys_health_weight', weightVal);
+      addLog('Gewicht', `${weightVal} kg`);
+      document.getElementById('weightInput').value = '';
+      loadProfile();
+    }
+
+    // Zusätzliche Sportart hinzufügen
+    function addCustomSport() {
+      const sportSelect = document.getElementById('moreSportsSelect');
+      const durationInput = document.getElementById('sportDuration');
+      
+      const sportName = sportSelect.value;
+      const duration = durationInput.value;
+
+      let logText = sportName;
+      if (duration) {
+        logText += ` (${duration} Min)`;
+      }
+
+      addLog('Sport', logText);
+      durationInput.value = '';
+    }
+
+    // Protokoll-Verwaltung
     function renderLogs() {
       const container = document.getElementById('logList');
       container.innerHTML = '';
@@ -278,6 +421,8 @@
       alert("Kamera/Foto-Analyse wird geöffnet... 📸");
     }
 
+    // Initialisierung
+    loadProfile();
     renderLogs();
   </script>
 </body>
