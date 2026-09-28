@@ -9,13 +9,14 @@
       --bg: #0f172a;
       --card-bg: #1e293b;
       --primary: #2563eb;
-      --primary-hover: #1d4ed8;
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --border: #334155;
       --danger: #ef4444;
       --success: #22c55e;
+      --warning: #f59e0b;
       --water: #3b82f6;
+      --food: #f97316;
     }
 
     * { box-sizing: border-box; }
@@ -25,7 +26,7 @@
       background-color: var(--bg);
       color: var(--text);
       margin: 0;
-      padding: 0 0 70px 0;
+      padding: 0 0 75px 0;
       display: flex;
       justify-content: center;
     }
@@ -39,7 +40,7 @@
       gap: 16px;
     }
 
-    .header { text-align: center; padding: 8px 0; }
+    .header { text-align: center; padding: 4px 0; }
     .header h1 { margin: 0; font-size: 24px; }
 
     .tab-content { display: none; flex-direction: column; gap: 16px; }
@@ -79,12 +80,13 @@
       border: 1px solid var(--border);
     }
 
-    .card h2 { margin-top: 0; margin-bottom: 12px; font-size: 18px; }
+    .card h2 { margin-top: 0; margin-bottom: 12px; font-size: 17px; display: flex; align-items: center; gap: 8px; }
 
+    /* Dashboard Grid Ergänzungen */
     .dashboard-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 8px;
       margin-bottom: 12px;
     }
 
@@ -92,17 +94,20 @@
       background: #0f172a;
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 12px;
+      padding: 10px;
       text-align: center;
     }
 
-    .metric-card .title { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
-    .metric-card .value { font-size: 18px; font-weight: bold; color: var(--text); }
+    .metric-card .title { font-size: 11px; color: var(--text-muted); margin-bottom: 2px; }
+    .metric-card .value { font-size: 16px; font-weight: bold; color: var(--text); }
+    .metric-card .value.food { color: var(--food); }
+    .metric-card .value.sport { color: var(--success); }
+    .metric-card .value.remaining { color: var(--water); }
 
     .progress-bar-bg {
       background: #0f172a;
       border-radius: 8px;
-      height: 10px;
+      height: 8px;
       width: 100%;
       overflow: hidden;
       margin-top: 6px;
@@ -116,7 +121,7 @@
       transition: width 0.3s ease;
     }
 
-    .form-group { display: flex; gap: 8px; margin-bottom: 10px; flex-direction: column; }
+    .form-group { display: flex; gap: 6px; margin-bottom: 10px; flex-direction: column; }
     .form-row { display: flex; gap: 8px; }
     .form-group label { font-size: 12px; color: var(--text-muted); }
 
@@ -147,7 +152,6 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
-      margin-bottom: 8px;
     }
 
     .action-card {
@@ -161,14 +165,14 @@
     }
 
     .action-card:active { transform: scale(0.97); }
-    .action-card .icon { font-size: 24px; display: block; margin-bottom: 4px; }
+    .action-card .icon { font-size: 22px; display: block; margin-bottom: 4px; }
     .action-card span { font-size: 12px; font-weight: 600; }
 
     .activity-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 14px;
+      gap: 8px;
+      margin-bottom: 12px;
     }
 
     .activity-btn {
@@ -176,7 +180,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 12px 6px;
+      padding: 10px 4px;
       border: 1px solid var(--border);
       border-radius: 12px;
       background: #0f172a;
@@ -186,16 +190,16 @@
     }
 
     .activity-btn:active { transform: scale(0.95); background-color: #1e293b; }
-    .activity-btn .icon { font-size: 26px; margin-bottom: 4px; }
-    .activity-btn span.label { font-size: 12px; font-weight: 500; text-align: center; }
+    .activity-btn .icon { font-size: 24px; margin-bottom: 2px; }
+    .activity-btn span.label { font-size: 11px; font-weight: 500; text-align: center; }
 
-    .more-sports-box {
+    .custom-box {
       border-top: 1px solid var(--border);
       padding-top: 12px;
       margin-top: 8px;
     }
 
-    .more-sports-box h3 { font-size: 14px; color: var(--text-muted); margin: 0 0 10px 0; }
+    .custom-box h3 { font-size: 13px; color: var(--text-muted); margin: 0 0 8px 0; }
 
     .log-item {
       display: flex;
@@ -203,6 +207,7 @@
       align-items: center;
       padding: 10px 0;
       border-bottom: 1px solid var(--border);
+      font-size: 13px;
     }
 
     .log-item:last-child { border-bottom: none; }
@@ -270,17 +275,15 @@
   <!-- Modal für Manuelle Mahlzeiteingabe -->
   <div id="manualMealModal" class="modal">
     <div class="modal-content">
-      <h2 style="margin-top:0;">🥗 Mahlzeit manuell eintragen</h2>
-      <p style="font-size: 12px; color: var(--text-muted);">Trage deine Zutaten oder deine Speise ein:</p>
-
+      <h2 style="margin-top:0;">🥗 Essen manuell eintragen</h2>
       <div class="form-group">
         <label>Beschreibung / Zutaten</label>
-        <textarea id="manualMealText" rows="4" placeholder="z. B.&#10;40 g Kürbis&#10;30 g Zwiebel&#10;20 g Olivenöl"></textarea>
+        <textarea id="manualMealText" rows="3" placeholder="z. B. 40g Kürbis, 30g Zwiebel, 20g Olivenöl"></textarea>
       </div>
 
       <div class="form-group">
-        <label>Geschätzte/Berechnete Kalorien (optional in kcal)</label>
-        <input type="number" id="manualMealCal" placeholder="z. B. 250">
+        <label>Geschätzte Kalorien (kcal)</label>
+        <input type="number" id="manualMealCal" placeholder="z. B. 320">
       </div>
 
       <div class="form-row" style="margin-top: 14px;">
@@ -300,28 +303,28 @@
     <div id="tab-tracking" class="tab-content active">
       
       <div class="card">
-        <h2>🔥 Tagesübersicht</h2>
+        <h2>🔥 Tages-Kalorienbilanz</h2>
         <div class="dashboard-grid">
           <div class="metric-card">
-            <div class="title">Grundumsatz (BMR)</div>
-            <div class="value" id="bmrDisplay">-- kcal</div>
-          </div>
-          <div class="metric-card">
-            <div class="title">Ziel-Verbrauch</div>
+            <div class="title">Ziel-Kalorien</div>
             <div class="value" id="targetCalDisplay">-- kcal</div>
           </div>
           <div class="metric-card">
-            <div class="title">Verbrannt (Sport)</div>
-            <div class="value" id="burnedCalDisplay">0 kcal</div>
+            <div class="title">Aufgenommen (Essen)</div>
+            <div class="value food" id="foodCalDisplay">0 kcal</div>
           </div>
           <div class="metric-card">
-            <div class="title">Gesamtverbrauch</div>
-            <div class="value" id="totalCalDisplay">-- kcal</div>
+            <div class="title">Verbrannt (Sport)</div>
+            <div class="value sport" id="burnedCalDisplay">0 kcal</div>
+          </div>
+          <div class="metric-card">
+            <div class="title">Verbleibendes Budget</div>
+            <div class="value remaining" id="remainingCalDisplay">-- kcal</div>
           </div>
         </div>
 
-        <div style="margin-top: 8px;">
-          <div style="display: flex; justify-content: space-between; font-size: 14px;">
+        <div style="margin-top: 10px;">
+          <div style="display: flex; justify-content: space-between; font-size: 13px;">
             <span>💧 Wasseraufnahme heute:</span>
             <strong id="waterDisplay">0 / 2500 ml</strong>
           </div>
@@ -332,7 +335,7 @@
       </div>
 
       <div class="card">
-        <h2>⚡ Schnell-Tracking</h2>
+        <h2>🥗 Essen & Trinken tracken</h2>
         <div class="quick-track-grid">
           <div class="action-card" onclick="addWater(250)">
             <span class="icon">💧</span>
@@ -354,9 +357,14 @@
       </div>
 
       <div class="card">
-        <h2>🏃‍♂️ Aktivität tracken</h2>
+        <h2>🏃‍♂️ Aktivität & Sport tracken</h2>
         
         <div class="activity-grid">
+          <button class="activity-btn" onclick="addQuickSport('Gehen / Spazieren 🚶‍♂️', 3.5)">
+            <span class="icon">🚶‍♂️</span>
+            <span class="label">Gehen</span>
+          </button>
+
           <button class="activity-btn" onclick="addQuickSport('Slow Jogging 🏃‍♂️', 6.0)">
             <span class="icon">🏃‍♂️</span>
             <span class="label">Slow Jogging</span>
@@ -381,42 +389,43 @@
             <span class="icon">🚴‍♂️</span>
             <span class="label">Ergometer</span>
           </button>
-
-          <button class="activity-btn" onclick="addQuickSport('Freeletics 🤸‍♂️', 8.0)">
-            <span class="icon">🤸‍♂️</span>
-            <span class="label">Freeletics</span>
-          </button>
         </div>
 
-        <div class="more-sports-box">
-          <h3>➕ Weitere Sportart wählen</h3>
+        <div class="custom-box">
+          <h3>➕ Sport aus Liste wählen</h3>
           <div class="form-group">
             <select id="moreSportsSelect">
+              <option value="Freeletics 🤸‍♂️" data-met="8.0">🤸‍♂️ Freeletics</option>
               <option value="Schwimmen 🏊‍♂️" data-met="7.0">🏊‍♂️ Schwimmen</option>
               <option value="Wandern 🥾" data-met="4.5">🥾 Wandern</option>
               <option value="Krafttraining 🏋️‍♂️" data-met="5.0">🏋️‍♂️ Krafttraining</option>
-              <option value="Radfahren 🚴‍♀️" data-met="6.8">🚴‍♀️ Radfahren (Draußen)</option>
+              <option value="Radfahren 🚴‍♀️" data-met="6.8">🚴‍♀️ Radfahren</option>
               <option value="Badminton 🏸" data-met="5.5">🏸 Badminton</option>
               <option value="Yoga 🧘‍♂️" data-met="3.0">🧘‍♂️ Yoga</option>
-              <option value="Pilates 🧘‍♀️" data-met="3.0">🧘‍♀️ Pilates</option>
-              <option value="Tischtennis 🏓" data-met="4.0">🏓 Tischtennis</option>
-              <option value="Boxen 🥊" data-met="9.0">🥊 Boxen</option>
-              <option value="Inline-Skating 🛼" data-met="7.0">🛼 Inline-Skating</option>
-              <option value="Crossfit 🏋️‍♀️" data-met="8.5">🏋️‍♀️ Crossfit</option>
-              <option value="Klettern 🧗‍♂️" data-met="7.0">🧗‍♂️ Klettern</option>
-              <option value="Tanzen 🕺" data-met="4.5">🕺 Tanzen</option>
             </select>
           </div>
           <div class="form-row">
-            <input type="number" id="sportDuration" placeholder="Dauer in Min (z.B. 45)">
+            <input type="number" id="sportDuration" placeholder="Dauer in Min (z.B. 30)">
             <button class="btn-main" style="width: auto; padding: 0 16px;" onclick="addCustomSport()">Tracken</button>
           </div>
+        </div>
+
+        <div class="custom-box">
+          <h3>✍️ Eigene Aktivität manuell eintragen</h3>
+          <div class="form-group">
+            <input type="text" id="customSportName" placeholder="Aktivität (z.B. Gartenarbeit, Tanzen)">
+          </div>
+          <div class="form-row">
+            <input type="number" id="customSportMin" placeholder="Dauer (Min)">
+            <input type="number" id="customSportCal" placeholder="Kalorien (kcal)">
+          </div>
+          <button class="btn-main" style="margin-top: 8px;" onclick="addFullyManualSport()">Aktivität Speichern</button>
         </div>
 
       </div>
 
       <div class="card">
-        <h2>✏️ Tagesprotokoll verwalten</h2>
+        <h2>✏️ Tagesprotokoll</h2>
         <div id="logList"></div>
       </div>
 
@@ -453,18 +462,18 @@
             <button class="btn-main" style="width: auto; padding: 0 16px;" onclick="addWeight()">Speichern</button>
           </div>
         </div>
-        <div id="currentWeightDisplay" style="color: var(--text-muted); font-size: 14px; margin-bottom: 8px;"></div>
+        <div id="currentWeightDisplay" style="color: var(--text-muted); font-size: 13px; margin-bottom: 8px;"></div>
         <div id="weightHistoryList"></div>
       </div>
 
       <div class="card">
         <h2>🎯 Meine Tagesziele</h2>
         <div class="form-group">
-          <label>Ziel-Kalorienverbrauch (kcal)</label>
-          <input type="number" id="targetCalories" placeholder="2500" onchange="updateProfile()">
+          <label>Ziel-Kalorienaufnahme (kcal/Tag)</label>
+          <input type="number" id="targetCalories" placeholder="2200" onchange="updateProfile()">
         </div>
         <div class="form-group">
-          <label>Ziel-Wasseraufnahme (ml)</label>
+          <label>Ziel-Wasseraufnahme (ml/Tag)</label>
           <input type="number" id="targetWater" placeholder="2500" onchange="updateProfile()">
         </div>
       </div>
@@ -472,7 +481,7 @@
       <div class="card">
         <h2>⚙️ KI & API Einstellungen</h2>
         <div class="form-group">
-          <label>Gemini API-Key (für Kamera-Mahlzeitenanalyse)</label>
+          <label>Gemini API-Key</label>
           <input type="password" id="apiKeyInput" placeholder="Hier deinen API Key eingeben..." onchange="saveApiKey()">
         </div>
       </div>
@@ -516,7 +525,7 @@
       document.getElementById('userHeight').value = localStorage.getItem('andys_health_height') || 178;
       document.getElementById('userAge').value = localStorage.getItem('andys_health_age') || 35;
       document.getElementById('userGender').value = localStorage.getItem('andys_health_gender') || 'male';
-      document.getElementById('targetCalories').value = localStorage.getItem('andys_health_target_cal') || 2500;
+      document.getElementById('targetCalories').value = localStorage.getItem('andys_health_target_cal') || 2200;
       document.getElementById('targetWater').value = localStorage.getItem('andys_health_target_water') || 2500;
       document.getElementById('apiKeyInput').value = localStorage.getItem('andys_health_api_key') || '';
       
@@ -544,28 +553,26 @@
     }
 
     function updateDashboard() {
-      const height = parseFloat(localStorage.getItem('andys_health_height')) || 178;
-      const age = parseFloat(localStorage.getItem('andys_health_age')) || 35;
-      const weight = parseFloat(localStorage.getItem('andys_health_weight')) || 75;
-      const gender = localStorage.getItem('andys_health_gender') || 'male';
-      const targetCal = parseInt(localStorage.getItem('andys_health_target_cal')) || 2500;
+      const targetCal = parseInt(localStorage.getItem('andys_health_target_cal')) || 2200;
       const targetWater = parseInt(localStorage.getItem('andys_health_target_water')) || 2500;
 
-      let bmr = (10 * weight) + (6.25 * height) - (5 * age);
-      bmr = (gender === 'male') ? bmr + 5 : bmr - 161;
-      bmr = Math.round(bmr);
-
+      let foodCal = 0;
       let burnedCal = 0;
+
       logs.forEach(log => {
-        if (log.cal) burnedCal += parseInt(log.cal);
+        if (log.type === 'food') {
+          foodCal += parseInt(log.cal || 0);
+        } else if (log.type === 'sport') {
+          burnedCal += parseInt(log.cal || 0);
+        }
       });
 
-      const totalCal = bmr + burnedCal;
+      const remainingCal = targetCal - foodCal + burnedCal;
 
-      document.getElementById('bmrDisplay').innerText = `${bmr} kcal`;
       document.getElementById('targetCalDisplay').innerText = `${targetCal} kcal`;
+      document.getElementById('foodCalDisplay').innerText = `${foodCal} kcal`;
       document.getElementById('burnedCalDisplay').innerText = `${burnedCal} kcal`;
-      document.getElementById('totalCalDisplay').innerText = `${totalCal} kcal`;
+      document.getElementById('remainingCalDisplay').innerText = `${remainingCal} kcal`;
 
       document.getElementById('waterDisplay').innerText = `${todayWater} / ${targetWater} ml`;
       const waterPct = Math.min(100, Math.round((todayWater / targetWater) * 100));
@@ -582,7 +589,7 @@
       weightHistory.unshift({ date: dateStr, weight: weightVal });
       localStorage.setItem('andys_health_weight_history', JSON.stringify(weightHistory));
 
-      addLog('Gewicht', `${weightVal} kg`, 0);
+      addLog('system', 'Gewicht', `${weightVal} kg`, 0);
       document.getElementById('weightInput').value = '';
       loadProfile();
       renderWeightHistory();
@@ -609,7 +616,7 @@
     function addWater(amount) {
       todayWater += amount;
       localStorage.setItem('andys_health_water_today', todayWater);
-      addLog('Wasser', `+${amount} ml`, 0);
+      addLog('water', 'Wasser', `+${amount} ml`, 0);
       updateDashboard();
     }
 
@@ -622,7 +629,7 @@
       const duration = prompt(`Dauer für ${sportName} in Minuten:`, "30");
       if (duration && !isNaN(duration) && parseInt(duration) > 0) {
         const cal = calculateCalories(met, parseInt(duration));
-        addLog('Sport', `${sportName} (${duration} Min, ~${cal} kcal)`, cal);
+        addLog('sport', 'Sport', `${sportName} (${duration} Min, ~${cal} kcal)`, cal);
         updateDashboard();
       }
     }
@@ -641,12 +648,33 @@
       const cal = calculateCalories(met, duration);
       const sportName = select.value;
 
-      addLog('Sport', `${sportName} (${duration} Min, ~${cal} kcal)`, cal);
+      addLog('sport', 'Sport', `${sportName} (${duration} Min, ~${cal} kcal)`, cal);
       document.getElementById('sportDuration').value = '';
       updateDashboard();
     }
 
-    /* MANUELLE MAHLZEIT FUNKTIONEN */
+    function addFullyManualSport() {
+      const name = document.getElementById('customSportName').value.trim();
+      const min = parseInt(document.getElementById('customSportMin').value) || 0;
+      const cal = parseInt(document.getElementById('customSportCal').value) || 0;
+
+      if (!name) {
+        alert("Bitte den Namen der Aktivität eintragen.");
+        return;
+      }
+
+      const durText = min > 0 ? `${min} Min` : '';
+      const calText = cal > 0 ? `~${cal} kcal` : '';
+      const detailText = [durText, calText].filter(Boolean).join(', ');
+
+      addLog('sport', 'Sport (Manuell)', `${name} ${detailText ? '(' + detailText + ')' : ''}`, cal);
+
+      document.getElementById('customSportName').value = '';
+      document.getElementById('customSportMin').value = '';
+      document.getElementById('customSportCal').value = '';
+      updateDashboard();
+    }
+
     function openManualMealModal(initialText = '') {
       document.getElementById('manualMealText').value = initialText;
       document.getElementById('manualMealCal').value = '';
@@ -662,14 +690,14 @@
       const cal = parseInt(document.getElementById('manualMealCal').value) || 0;
 
       if (!text) {
-        alert("Bitte mindestens eine Speise oder Zutaten eingeben.");
+        alert("Bitte eine Speise oder Zutaten eintragen.");
         return;
       }
 
       const formattedText = text.replace(/\n/g, ', ');
       const calInfo = cal > 0 ? ` (~${cal} kcal)` : '';
       
-      addLog('Mahlzeit (Manuell)', `${formattedText}${calInfo}`, 0);
+      addLog('food', 'Mahlzeit (Manuell)', `${formattedText}${calInfo}`, cal);
       closeManualMealModal();
       updateDashboard();
     }
@@ -701,8 +729,8 @@
       localStorage.setItem('andys_health_logs', JSON.stringify(logs));
     }
 
-    function addLog(kat, text, cal = 0) {
-      logs.unshift({ kat, text, cal });
+    function addLog(type, kat, text, cal = 0) {
+      logs.unshift({ type, kat, text, cal });
       renderLogs();
     }
 
@@ -710,6 +738,13 @@
       const newText = prompt("Eintrag korrigieren:", logs[index].text);
       if (newText !== null && newText.trim() !== "") {
         logs[index].text = newText;
+        
+        // Wenn Kalorien im Text geändert werden, versuchen neu auszulesen
+        const calMatch = newText.match(/(\d+)\s*kcal/i);
+        if (calMatch && calMatch[1]) {
+          logs[index].cal = parseInt(calMatch[1]);
+        }
+
         renderLogs();
         updateDashboard();
       }
@@ -756,13 +791,19 @@
         const resultText = await callGeminiWithFallback(apiKey, base64Data, file.type || "image/jpeg", statusText);
         
         if (resultText) {
-          addLog('Mahlzeit (KI)', resultText, 0);
+          let extractedCal = 0;
+          const calMatch = resultText.match(/(\d+)\s*kcal/i);
+          if (calMatch && calMatch[1]) {
+            extractedCal = parseInt(calMatch[1]);
+          }
+
+          addLog('food', 'Mahlzeit (KI)', resultText, extractedCal);
           updateDashboard();
         }
 
       } catch (err) {
         console.error(err);
-        if (confirm("KI ist ausgelastet oder nicht erreichbar. Möchtest du die Mahlzeit manuell eingeben?")) {
+        if (confirm("KI ist ausgelastet. Möchtest du die Mahlzeit manuell eingeben?")) {
           openManualMealModal();
         }
       } finally {
