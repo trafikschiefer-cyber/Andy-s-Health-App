@@ -235,7 +235,7 @@
 </head>
 <body>
 
-  <!-- Hidden File Input ohne capture-Zwang (funktioniert auf Android zuverlässiger) -->
+  <!-- Hidden File Input für Foto/Kamera -->
   <input type="file" id="mealImageInput" accept="image/*" style="display: none;" onchange="handleMealImage(event)">
 
   <!-- Loading Overlay -->
@@ -669,8 +669,8 @@
         const base64Image = await fileToBase64(file);
         const base64Data = base64Image.split(',')[1];
 
-        // Verwende das Modell gemini-2.5-flash
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+        // Aktualisierter Endpoint auf gemini-3.8-flash
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
 
         const response = await fetch(url, {
           method: 'POST',
