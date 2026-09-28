@@ -9,6 +9,7 @@
       --bg: #0f172a;
       --card-bg: #1e293b;
       --primary: #2563eb;
+      --primary-hover: #1d4ed8;
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --border: #334155;
@@ -17,12 +18,16 @@
       --water: #3b82f6;
     }
 
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg);
       color: var(--text);
       margin: 0;
-      padding: 16px;
+      padding: 0 0 70px 0; /* Platz für Untermenü/Tab-Leiste */
       display: flex;
       justify-content: center;
     }
@@ -30,6 +35,7 @@
     .app-container {
       width: 100%;
       max-width: 480px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -45,6 +51,53 @@
       font-size: 24px;
     }
 
+    /* Tab-Steuerung */
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .tab-content.active {
+      display: flex;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 100;
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      width: 50%;
+    }
+
+    .nav-btn .nav-icon {
+      font-size: 20px;
+    }
+
+    .nav-btn.active {
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    /* Cards & Layout */
     .card {
       background: var(--card-bg);
       border-radius: 16px;
@@ -109,10 +162,21 @@
       display: flex;
       gap: 8px;
       margin-bottom: 10px;
+      flex-direction: column;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .form-group label {
+      font-size: 12px;
+      color: var(--text-muted);
     }
 
     .form-group input, .form-group select {
-      flex: 1;
+      width: 100%;
       padding: 10px;
       border-radius: 8px;
       border: 1px solid var(--border);
@@ -130,6 +194,7 @@
       color: white;
       font-weight: bold;
       cursor: pointer;
+      text-align: center;
     }
 
     /* Schnell-Tracking Grid */
@@ -214,7 +279,7 @@
       margin: 0 0 10px 0;
     }
 
-    /* Einträge korrigieren */
+    /* Einträge korrigieren & Historie */
     .log-item {
       display: flex;
       justify-content: space-between;
@@ -254,170 +319,236 @@
       <h1>Andy's Health 📊</h1>
     </div>
 
-    <!-- Tagesübersicht / Dashboard -->
-    <div class="card">
-      <h2>🔥 Tagesübersicht</h2>
-      <div class="dashboard-grid">
-        <div class="metric-card">
-          <div class="title">Grundumsatz (BMR)</div>
-          <div class="value" id="bmrDisplay">-- kcal</div>
-        </div>
-        <div class="metric-card">
-          <div class="title">Ziel-Verbrauch</div>
-          <div class="value" id="targetCalDisplay">-- kcal</div>
-        </div>
-        <div class="metric-card">
-          <div class="title">Verbrannt (Aktivität)</div>
-          <div class="value" id="burnedCalDisplay">0 kcal</div>
-        </div>
-        <div class="metric-card">
-          <div class="title">Gesamtverbrauch</div>
-          <div class="value" id="totalCalDisplay">-- kcal</div>
-        </div>
-      </div>
-
-      <!-- Wasserstand -->
-      <div style="margin-top: 8px;">
-        <div style="display: flex; justify-content: space-between; font-size: 14px;">
-          <span>💧 Wasseraufnahme heute:</span>
-          <strong id="waterDisplay">0 / 2500 ml</strong>
-        </div>
-        <div class="progress-bar-bg">
-          <div class="progress-bar-fill" id="waterProgress"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Profil & Ziele -->
-    <div class="card">
-      <h2>👤 Mein Profil & Ziele</h2>
-      <div class="form-group">
-        <input type="number" id="userHeight" placeholder="Größe (cm)" onchange="updateProfile()">
-        <input type="number" id="userAge" placeholder="Alter" onchange="updateProfile()">
-      </div>
-      <div class="form-group">
-        <input type="number" id="targetCalories" placeholder="Ziel-Verbrauch (kcal)" onchange="updateProfile()">
-        <input type="number" id="targetWater" placeholder="Ziel-Wasser (ml)" onchange="updateProfile()">
-      </div>
-    </div>
-
-    <!-- Gewicht tracken -->
-    <div class="card">
-      <h2>⚖️ Gewicht tracken</h2>
-      <div class="form-group">
-        <input type="number" id="weightInput" step="0.1" placeholder="Neues Gewicht (kg)">
-        <button class="btn-main" style="width: auto; padding: 0 16px;" onclick="addWeight()">Speichern</button>
-      </div>
-      <div id="currentWeightDisplay" style="color: var(--text-muted); font-size: 14px; text-align: center; margin-top: 6px;"></div>
-    </div>
-
-    <!-- Schnell-Tracking -->
-    <div class="card">
-      <h2>⚡ Schnell-Tracking</h2>
-      <div class="quick-track-grid">
-        <div class="action-card" onclick="addWater(250)">
-          <span class="icon">💧</span>
-          <span>Wasser (+250ml)</span>
-        </div>
-        <div class="action-card" onclick="openCamera()">
-          <span class="icon">📸</span>
-          <span>Mahlzeit (KI)</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Aktivität tracken -->
-    <div class="card">
-      <h2>🏃‍♂️ Aktivität tracken</h2>
+    <!-- ==================== TAB 1: TRACKING & DASHBOARD ==================== -->
+    <div id="tab-tracking" class="tab-content active">
       
-      <!-- Schnellzugriff -->
-      <div class="activity-grid">
-        <button class="activity-btn" onclick="addSportLog('Slow Jogging 🏃‍♂️', 300)">
-          <span class="icon">🏃‍♂️</span>
-          <span class="label">Slow Jogging</span>
-        </button>
+      <!-- Tagesübersicht / Dashboard -->
+      <div class="card">
+        <h2>🔥 Tagesübersicht</h2>
+        <div class="dashboard-grid">
+          <div class="metric-card">
+            <div class="title">Grundumsatz (BMR)</div>
+            <div class="value" id="bmrDisplay">-- kcal</div>
+          </div>
+          <div class="metric-card">
+            <div class="title">Ziel-Verbrauch</div>
+            <div class="value" id="targetCalDisplay">-- kcal</div>
+          </div>
+          <div class="metric-card">
+            <div class="title">Verbrannt (Sport)</div>
+            <div class="value" id="burnedCalDisplay">0 kcal</div>
+          </div>
+          <div class="metric-card">
+            <div class="title">Gesamtverbrauch</div>
+            <div class="value" id="totalCalDisplay">-- kcal</div>
+          </div>
+        </div>
 
-        <button class="activity-btn" onclick="addSportLog('Paddel-Tennis 🎾', 400)">
-          <span class="icon">🎾</span>
-          <span class="label">Paddel-Tennis</span>
-        </button>
-
-        <button class="activity-btn" onclick="addSportLog('Laufen 🏃', 450)">
-          <span class="icon">🏃</span>
-          <span class="label">Laufen</span>
-        </button>
-
-        <button class="activity-btn" onclick="addSportLog('Skifahren ⛷️', 350)">
-          <span class="icon">⛷️</span>
-          <span class="label">Skifahren</span>
-        </button>
-
-        <button class="activity-btn" onclick="addSportLog('Ergometer 🚴‍♂️', 300)">
-          <span class="icon">🚴‍♂️</span>
-          <span class="label">Ergometer</span>
-        </button>
-
-        <button class="activity-btn" onclick="addSportLog('Freeletics 🤸‍♂️', 400)">
-          <span class="icon">🤸‍♂️</span>
-          <span class="label">Freeletics</span>
-        </button>
+        <!-- Wasserstand -->
+        <div style="margin-top: 8px;">
+          <div style="display: flex; justify-content: space-between; font-size: 14px;">
+            <span>💧 Wasseraufnahme heute:</span>
+            <strong id="waterDisplay">0 / 2500 ml</strong>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="waterProgress"></div>
+          </div>
+        </div>
       </div>
 
-      <!-- Weitere Sportarten (Huawei Health Style) -->
-      <div class="more-sports-box">
-        <h3>➕ Weitere Sportart hinzufügen</h3>
+      <!-- Schnell-Tracking -->
+      <div class="card">
+        <h2>⚡ Schnell-Tracking</h2>
+        <div class="quick-track-grid">
+          <div class="action-card" onclick="addWater(250)">
+            <span class="icon">💧</span>
+            <span>Wasser (+250ml)</span>
+          </div>
+          <div class="action-card" onclick="openCamera()">
+            <span class="icon">📸</span>
+            <span>Mahlzeit (KI)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Aktivität tracken -->
+      <div class="card">
+        <h2>🏃‍♂️ Aktivität tracken</h2>
+        
+        <!-- Schnellzugriff -->
+        <div class="activity-grid">
+          <button class="activity-btn" onclick="addQuickSport('Slow Jogging 🏃‍♂️', 6.0)">
+            <span class="icon">🏃‍♂️</span>
+            <span class="label">Slow Jogging</span>
+          </button>
+
+          <button class="activity-btn" onclick="addQuickSport('Paddel-Tennis 🎾', 6.0)">
+            <span class="icon">🎾</span>
+            <span class="label">Paddel-Tennis</span>
+          </button>
+
+          <button class="activity-btn" onclick="addQuickSport('Laufen 🏃', 8.0)">
+            <span class="icon">🏃</span>
+            <span class="label">Laufen</span>
+          </button>
+
+          <button class="activity-btn" onclick="addQuickSport('Skifahren ⛷️', 5.5)">
+            <span class="icon">⛷️</span>
+            <span class="label">Skifahren</span>
+          </button>
+
+          <button class="activity-btn" onclick="addQuickSport('Ergometer 🚴‍♂️', 6.8)">
+            <span class="icon">🚴‍♂️</span>
+            <span class="label">Ergometer</span>
+          </button>
+
+          <button class="activity-btn" onclick="addQuickSport('Freeletics 🤸‍♂️', 8.0)">
+            <span class="icon">🤸‍♂️</span>
+            <span class="label">Freeletics</span>
+          </button>
+        </div>
+
+        <!-- Weitere Sportarten (Huawei Health Style) -->
+        <div class="more-sports-box">
+          <h3>➕ Weitere Sportart wählen</h3>
+          <div class="form-group">
+            <select id="moreSportsSelect">
+              <option value="Schwimmen 🏊‍♂️" data-met="7.0">🏊‍♂️ Schwimmen</option>
+              <option value="Wandern 🥾" data-met="4.5">🥾 Wandern</option>
+              <option value="Krafttraining 🏋️‍♂️" data-met="5.0">🏋️‍♂️ Krafttraining</option>
+              <option value="Radfahren 🚴‍♀️" data-met="6.8">🚴‍♀️ Radfahren (Draußen)</option>
+              <option value="Badminton 🏸" data-met="5.5">🏸 Badminton</option>
+              <option value="Yoga 🧘‍♂️" data-met="3.0">🧘‍♂️ Yoga</option>
+              <option value="Pilates 🧘‍♀️" data-met="3.0">🧘‍♀️ Pilates</option>
+              <option value="Tischtennis 🏓" data-met="4.0">🏓 Tischtennis</option>
+              <option value="Boxen 🥊" data-met="9.0">🥊 Boxen</option>
+              <option value="Inline-Skating 🛼" data-met="7.0">🛼 Inline-Skating</option>
+              <option value="Crossfit 🏋️‍♀️" data-met="8.5">🏋️‍♀️ Crossfit</option>
+              <option value="Klettern 🧗‍♂️" data-met="7.0">🧗‍♂️ Klettern</option>
+              <option value="Tanzen 🕺" data-met="4.5">🕺 Tanzen</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <input type="number" id="sportDuration" placeholder="Dauer in Min (z.B. 45)">
+            <button class="btn-main" style="width: auto; padding: 0 16px;" onclick="addCustomSport()">Tracken</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Protokoll / Korrektur-Bereich -->
+      <div class="card">
+        <h2>✏️ Tagesprotokoll verwalten</h2>
+        <div id="logList"></div>
+      </div>
+
+    </div>
+
+
+    <!-- ==================== TAB 2: PROFIL & EINSTELLUNGEN ==================== -->
+    <div id="tab-profile" class="tab-content">
+      
+      <!-- Persönliche Daten -->
+      <div class="card">
+        <h2>👤 Körperwerte</h2>
         <div class="form-group">
-          <select id="moreSportsSelect">
-            <option value="Schwimmen 🏊‍♂️" data-cal="400">🏊‍♂️ Schwimmen</option>
-            <option value="Wandern 🥾" data-cal="250">🥾 Wandern</option>
-            <option value="Krafttraining 🏋️‍♂️" data-cal="300">🏋️‍♂️ Krafttraining</option>
-            <option value="Radfahren 🚴‍♀️" data-cal="350">🚴‍♀️ Radfahren (Draußen)</option>
-            <option value="Badminton 🏸" data-cal="350">🏸 Badminton</option>
-            <option value="Yoga 🧘‍♂️" data-cal="180">🧘‍♂️ Yoga</option>
-            <option value="Pilates 🧘‍♀️" data-cal="200">🧘‍♀️ Pilates</option>
-            <option value="Tischtennis 🏓" data-cal="250">🏓 Tischtennis</option>
-            <option value="Boxen 🥊" data-cal="500">🥊 Boxen</option>
-            <option value="Inline-Skating 🛼" data-cal="350">🛼 Inline-Skating</option>
-            <option value="Crossfit 🏋️‍♀️" data-cal="500">🏋️‍♀️ Crossfit</option>
-            <option value="Surfen 🏄‍♂️" data-cal="300">🏄‍♂️ Surfen</option>
-            <option value="Klettern 🧗‍♂️" data-cal="400">🧗‍♂️ Klettern</option>
-            <option value="Tanzen 🕺" data-cal="250">🕺 Tanzen</option>
-            <option value="Fußball ⚽" data-cal="450">⚽ Fußball</option>
-            <option value="Basketball 🏀" data-cal="450">🏀 Basketball</option>
-            <option value="Volleyball 🏐" data-cal="300">🏐 Volleyball</option>
+          <label>Körpergröße (cm)</label>
+          <input type="number" id="userHeight" placeholder="178" onchange="updateProfile()">
+        </div>
+        <div class="form-group">
+          <label>Alter</label>
+          <input type="number" id="userAge" placeholder="35" onchange="updateProfile()">
+        </div>
+        <div class="form-group">
+          <label>Geschlecht</label>
+          <select id="userGender" onchange="updateProfile()">
+            <option value="male">Männlich</option>
+            <option value="female">Weiblich</option>
           </select>
         </div>
+      </div>
+
+      <!-- Gewichtsmanagement -->
+      <div class="card">
+        <h2>⚖️ Gewichtsverlauf</h2>
         <div class="form-group">
-          <input type="number" id="sportDuration" placeholder="Dauer in Min (z.B. 45)">
-          <button class="btn-main" style="width: auto; padding: 0 16px;" onclick="addCustomSport()">Tracken</button>
+          <label>Neues Gewicht eintragen (kg)</label>
+          <div class="form-row">
+            <input type="number" id="weightInput" step="0.1" placeholder="z. B. 75.5">
+            <button class="btn-main" style="width: auto; padding: 0 16px;" onclick="addWeight()">Speichern</button>
+          </div>
+        </div>
+        <div id="currentWeightDisplay" style="color: var(--text-muted); font-size: 14px; margin-bottom: 8px;"></div>
+        <div id="weightHistoryList"></div>
+      </div>
+
+      <!-- Tagesziele -->
+      <div class="card">
+        <h2>🎯 Meine Tagesziele</h2>
+        <div class="form-group">
+          <label>Ziel-Kalorienverbrauch (kcal)</label>
+          <input type="number" id="targetCalories" placeholder="2500" onchange="updateProfile()">
+        </div>
+        <div class="form-group">
+          <label>Ziel-Wasseraufnahme (ml)</label>
+          <input type="number" id="targetWater" placeholder="2500" onchange="updateProfile()">
         </div>
       </div>
 
-    </div>
+      <!-- Schnittstellen & API -->
+      <div class="card">
+        <h2>⚙️ KI & API Einstellungen</h2>
+        <div class="form-group">
+          <label>Gemini API-Key (für Kamera-Mahlzeitenanalyse)</label>
+          <input type="password" id="apiKeyInput" placeholder="AIzaSy..." onchange="saveApiKey()">
+        </div>
+      </div>
 
-    <!-- Protokoll / Korrektur-Bereich -->
-    <div class="card">
-      <h2>✏️ Einträge verwalten & korrigieren</h2>
-      <div id="logList"></div>
     </div>
 
   </div>
 
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" id="btn-tab-tracking" onclick="switchTab('tracking')">
+      <span class="nav-icon">📊</span>
+      <span>Tracking</span>
+    </button>
+    <button class="nav-btn" id="btn-tab-profile" onclick="switchTab('profile')">
+      <span class="nav-icon">👤</span>
+      <span>Profil & Ziele</span>
+    </button>
+  </nav>
+
   <script>
     let logs = JSON.parse(localStorage.getItem('andys_health_logs')) || [];
+    let weightHistory = JSON.parse(localStorage.getItem('andys_health_weight_history')) || [];
     let todayWater = parseInt(localStorage.getItem('andys_health_water_today')) || 0;
 
     function init() {
       loadProfile();
       renderLogs();
+      renderWeightHistory();
       updateDashboard();
     }
 
+    // Tab-Wechsel
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+
+      document.getElementById(`tab-${tabName}`).classList.add('active');
+      document.getElementById(`btn-tab-${tabName}`).classList.add('active');
+    }
+
+    // Profil & Einstellungen
     function loadProfile() {
       document.getElementById('userHeight').value = localStorage.getItem('andys_health_height') || 178;
       document.getElementById('userAge').value = localStorage.getItem('andys_health_age') || 35;
+      document.getElementById('userGender').value = localStorage.getItem('andys_health_gender') || 'male';
       document.getElementById('targetCalories').value = localStorage.getItem('andys_health_target_cal') || 2500;
       document.getElementById('targetWater').value = localStorage.getItem('andys_health_target_water') || 2500;
+      document.getElementById('apiKeyInput').value = localStorage.getItem('andys_health_api_key') || '';
       
       const weight = localStorage.getItem('andys_health_weight') || '--';
       document.getElementById('currentWeightDisplay').innerText = `Aktuelles Gewicht: ${weight} kg`;
@@ -426,22 +557,32 @@
     function updateProfile() {
       localStorage.setItem('andys_health_height', document.getElementById('userHeight').value);
       localStorage.setItem('andys_health_age', document.getElementById('userAge').value);
+      localStorage.setItem('andys_health_gender', document.getElementById('userGender').value);
       localStorage.setItem('andys_health_target_cal', document.getElementById('targetCalories').value);
       localStorage.setItem('andys_health_target_water', document.getElementById('targetWater').value);
       updateDashboard();
     }
 
+    function saveApiKey() {
+      localStorage.setItem('andys_health_api_key', document.getElementById('apiKeyInput').value);
+      alert("API Key gespeichert!");
+    }
+
+    // Dashboard & Grundumsatz-Berechnung
     function updateDashboard() {
       const height = parseFloat(localStorage.getItem('andys_health_height')) || 178;
       const age = parseFloat(localStorage.getItem('andys_health_age')) || 35;
       const weight = parseFloat(localStorage.getItem('andys_health_weight')) || 75;
+      const gender = localStorage.getItem('andys_health_gender') || 'male';
       const targetCal = parseInt(localStorage.getItem('andys_health_target_cal')) || 2500;
       const targetWater = parseInt(localStorage.getItem('andys_health_target_water')) || 2500;
 
-      // Harris-Benedict Formel (Männer Grundumsatz Näherung)
-      const bmr = Math.round(88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age));
+      // Mifflins-St.Jeor Formel für Grundumsatz
+      let bmr = (10 * weight) + (6.25 * height) - (5 * age);
+      bmr = (gender === 'male') ? bmr + 5 : bmr - 161;
+      bmr = Math.round(bmr);
 
-      // Verbrannte Kalorien aus den Logs berechnen
+      // Verbrannte Kalorien aus den Aktivitäten berechnen
       let burnedCal = 0;
       logs.forEach(log => {
         if (log.cal) burnedCal += parseInt(log.cal);
@@ -454,23 +595,48 @@
       document.getElementById('burnedCalDisplay').innerText = `${burnedCal} kcal`;
       document.getElementById('totalCalDisplay').innerText = `${totalCal} kcal`;
 
-      // Wasser
+      // Wasseranzeige
       document.getElementById('waterDisplay').innerText = `${todayWater} / ${targetWater} ml`;
       const waterPct = Math.min(100, Math.round((todayWater / targetWater) * 100));
       document.getElementById('waterProgress').style.width = `${waterPct}%`;
     }
 
+    // Gewichts-Tracking mit Historie
     function addWeight() {
-      const weightVal = document.getElementById('weightInput').value;
+      const weightVal = parseFloat(document.getElementById('weightInput').value);
       if (!weightVal) return;
 
+      const dateStr = new Date().toLocaleDateString('de-DE');
       localStorage.setItem('andys_health_weight', weightVal);
+      
+      weightHistory.unshift({ date: dateStr, weight: weightVal });
+      localStorage.setItem('andys_health_weight_history', JSON.stringify(weightHistory));
+
       addLog('Gewicht', `${weightVal} kg`, 0);
       document.getElementById('weightInput').value = '';
       loadProfile();
+      renderWeightHistory();
       updateDashboard();
     }
 
+    function renderWeightHistory() {
+      const container = document.getElementById('weightHistoryList');
+      container.innerHTML = '';
+
+      if (weightHistory.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted); font-size:12px;">Bisher noch keine Einträge.</p>';
+        return;
+      }
+
+      weightHistory.slice(0, 5).forEach(item => {
+        const div = document.createElement('div');
+        div.style.cssText = 'display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); padding:3px 0;';
+        div.innerHTML = `<span>${item.date}</span><strong>${item.weight} kg</strong>`;
+        container.appendChild(div);
+      });
+    }
+
+    // Wasser-Tracking
     function addWater(amount) {
       todayWater += amount;
       localStorage.setItem('andys_health_water_today', todayWater);
@@ -478,19 +644,34 @@
       updateDashboard();
     }
 
-    function addSportLog(sportName, estCalPerHour) {
-      const cal = Math.round(estCalPerHour * 0.75); // Standard ca. 45 Min Annahme bei Schnellauswahl
-      addLog('Sport', `${sportName} (~${cal} kcal)`, cal);
-      updateDashboard();
+    // Kalorienberechnung per MET-Wert & Dauer
+    function calculateCalories(met, durationMinutes) {
+      const weight = parseFloat(localStorage.getItem('andys_health_weight')) || 75;
+      // Formel: (MET * 3.5 * Gewicht in kg / 200) * Minuten
+      return Math.round((met * 3.5 * weight / 200) * durationMinutes);
+    }
+
+    function addQuickSport(sportName, met) {
+      const duration = prompt(`Dauer für ${sportName} in Minuten:`, "30");
+      if (duration && !isNaN(duration) && parseInt(duration) > 0) {
+        const cal = calculateCalories(met, parseInt(duration));
+        addLog('Sport', `${sportName} (${duration} Min, ~${cal} kcal)`, cal);
+        updateDashboard();
+      }
     }
 
     function addCustomSport() {
       const select = document.getElementById('moreSportsSelect');
-      const duration = parseInt(document.getElementById('sportDuration').value) || 30;
-      const option = select.options[select.selectedIndex];
-      const calPerHour = parseInt(option.getAttribute('data-cal')) || 300;
+      const duration = parseInt(document.getElementById('sportDuration').value);
 
-      const cal = Math.round((calPerHour / 60) * duration);
+      if (!duration || duration <= 0) {
+        alert("Bitte eine gültige Dauer in Minuten eingeben.");
+        return;
+      }
+
+      const option = select.options[select.selectedIndex];
+      const met = parseFloat(option.getAttribute('data-met')) || 5.0;
+      const cal = calculateCalories(met, duration);
       const sportName = select.value;
 
       addLog('Sport', `${sportName} (${duration} Min, ~${cal} kcal)`, cal);
@@ -498,7 +679,7 @@
       updateDashboard();
     }
 
-    // Protokoll-Verwaltung
+    // Log-Verwaltung (Tagesprotokoll)
     function renderLogs() {
       const container = document.getElementById('logList');
       container.innerHTML = '';
@@ -549,10 +730,16 @@
     }
 
     function openCamera() {
-      alert("Kamera/Foto-Analyse wird geöffnet... 📸");
+      const apiKey = localStorage.getItem('andys_health_api_key');
+      if (!apiKey) {
+        alert("Bitte trage zuerst im Reiter 'Profil & Ziele' deinen Gemini API-Key ein!");
+        switchTab('profile');
+        return;
+      }
+      alert("Kamera/Foto-Analyse wird gestartet... 📸");
     }
 
-    // Initialisierung
+    // Starten
     init();
   </script>
 </body>
