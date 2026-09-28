@@ -144,23 +144,23 @@
 
     .quick-track-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
     }
 
     .action-card {
       background: #0f172a;
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 16px;
+      padding: 12px 6px;
       text-align: center;
       cursor: pointer;
       transition: transform 0.1s ease;
     }
 
     .action-card:active { transform: scale(0.97); }
-    .action-card .icon { font-size: 32px; display: block; margin-bottom: 6px; }
-    .action-card span { font-size: 14px; font-weight: 600; }
+    .action-card .icon { font-size: 26px; display: block; margin-bottom: 4px; }
+    .action-card span { font-size: 12px; font-weight: 600; }
 
     .activity-grid {
       display: grid;
@@ -235,8 +235,10 @@
 </head>
 <body>
 
-  <!-- Hidden File Input für Foto/Kamera -->
-  <input type="file" id="mealImageInput" accept="image/*" style="display: none;" onchange="handleMealImage(event)">
+  <!-- Input für direkte Kameraaufnahme -->
+  <input type="file" id="cameraImageInput" accept="image/*" capture="environment" style="display: none;" onchange="handleMealImage(event)">
+  <!-- Input für Galerieauswahl -->
+  <input type="file" id="galleryImageInput" accept="image/*" style="display: none;" onchange="handleMealImage(event)">
 
   <!-- Loading Overlay -->
   <div id="loadingOverlay" class="loading-overlay">
@@ -293,9 +295,13 @@
             <span class="icon">💧</span>
             <span>Wasser (+250ml)</span>
           </div>
-          <div class="action-card" onclick="openCamera()">
+          <div class="action-card" onclick="openCamera(true)">
             <span class="icon">📸</span>
-            <span>Mahlzeit (KI)</span>
+            <span>Kamera (KI)</span>
+          </div>
+          <div class="action-card" onclick="openCamera(false)">
+            <span class="icon">🖼️</span>
+            <span>Galerie (KI)</span>
           </div>
         </div>
       </div>
@@ -642,15 +648,20 @@
       }
     }
 
-    // FOTO / KAMERA FUNKTION
-    function openCamera() {
+    // KAMERA UND GALERIE OEFFNEN
+    function openCamera(isCameraMode) {
       const apiKey = getActiveApiKey();
       if (!apiKey) {
         alert("Bitte trage zuerst unter 'Profil & Ziele' deinen Gemini API-Key ein!");
         switchTab('profile');
         return;
       }
-      document.getElementById('mealImageInput').click();
+      
+      if (isCameraMode) {
+        document.getElementById('cameraImageInput').click();
+      } else {
+        document.getElementById('galleryImageInput').click();
+      }
     }
 
     async function handleMealImage(event) {
@@ -669,32 +680,15 @@
         const base64Image = await fileToBase64(file);
         const base64Data = base64Image.split(',')[1];
 
-        // Aktualisierter Endpoint auf gemini-3.8-flash
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
-
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{
-              parts: [
-                { text: "Analysiere diese Mahlzeit. Gib kurz in einem Satz den Namen der Speise und eine Schätzung der Kalorien an, z.B.: 'Schnitzel mit Pommes (~750 kcal)'" },
-                { inline_data: { mime_type: file.type || "image/jpeg", data: base64Data } }
-              ]
-            }]
-          })
-        });
-
-        const data = await response.json();
-
-        if (data.error) {
-          alert("API-Fehler: " + (data.error.message || JSON.stringify(data.error)));
-        } else if (data.candidates && data.candidates[0].content.parts[0].text) {
-          const resultText = data.candidates[0].content.parts[0].text.trim();
+        // Stabile API-Aufruf-Funktion mit automatischem Fallback
+        const resultText = await callGeminiWithFallback(apiKey, base64Data, file.type || "image/jpeg");
+        
+        if (resultText) {
           addLog('Mahlzeit (KI)', resultText, 0);
         } else {
-          alert("Kein Ergebnis von Gemini erhalten.");
+          alert("Es konnte kein Ergebnis verarbeitet werden.");
         }
+
       } catch (err) {
         console.error(err);
         alert("Fehler bei der Übertragung: " + err.message);
@@ -702,6 +696,45 @@
         document.getElementById('loadingOverlay').style.display = 'none';
         event.target.value = '';
       }
+    }
+
+    // Funktion mit automatischem Modell-Fallback bei Server-Überlastung
+    async function callGeminiWithFallback(apiKey, base64Data, mimeType) {
+      const models = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash'];
+      const promptText = "Analysiere diese Mahlzeit. Gib kurz in einem Satz den Namen der Speise und eine Schätzung der Kalorien an, z.B.: 'Schnitzel mit Pommes (~750 kcal)'";
+
+      for (let model of models) {
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [
+                  { text: promptText },
+                  { inline_data: { mime_type: mimeType, data: base64Data } }
+                ]
+              }]
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.error) {
+            console.warn(`Fehler mit ${model}:`, data.error.message);
+            continue; // Bei Fehler nächstes Modell versuchen
+          }
+
+          if (data.candidates && data.candidates[0].content.parts[0].text) {
+            return data.candidates[0].content.parts[0].text.trim();
+          }
+        } catch (e) {
+          console.warn(`Netzwerkfehler mit ${model}:`, e);
+        }
+      }
+      
+      throw new Error("Alle KI-Modelle sind derzeit ausgelastet. Bitte versuche es gleich noch einmal.");
     }
 
     function fileToBase64(file) {
