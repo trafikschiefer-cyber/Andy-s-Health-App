@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de" data-theme="light">
+<html lang="de" data-theme="hell">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -13,7 +13,7 @@
   <link rel="icon" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
   <style>
-    /* Helles, warmes Design (Standard) */
+    /* Design „Hell“ (Standard) */
     :root {
       --bg: #f1f4f5;
       --card-bg: #ffffff;
@@ -43,29 +43,59 @@
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
-    /* Dunkles, warmes Design */
-    :root[data-theme="dark"] {
-      --bg: #151b1e; --card-bg: #1e2629; --inset: #192023;
+    /* Weitere Designs – Auswahl im Profil */
+    :root[data-theme="stein"] {
+      --bg: #c8d0d4; --card-bg: #e7ecee; --inset: #d7dee1; --border: #b6c1c6;
+      --text: #1c262c; --text-muted: #4d5b63; --shadow: 0 1px 3px rgba(0,0,0,0.08);
+      --primary: #0d8074; --primary-ink: #ffffff; --primary-soft: #c9e4df;
+      --danger: #bd4538; --danger-soft: #f0d5d0; --success: #2d8749; --water: #1d7fab; --food: #d4621f;
+      --protein: #c4507a; --carbs: #b98d12; --fat: #7864b0;
+      --morning: #e08a3c; --evening: #6f74c9; --strength: #3a9a63;
+      --on-accent: #1c262c; --overlay: rgba(20,30,35,0.5); --topbar: rgba(200,208,212,0.94);
+    }
+    :root[data-theme="graphit"] {
+      --bg: #2d3336; --card-bg: #394044; --inset: #32383b; --border: #4a5458;
+      --text: #eef2f3; --text-muted: #a8b4b9; --shadow: none;
+      --primary: #4fcfbd; --primary-ink: #0f2623; --primary-soft: #2e4a47;
+      --danger: #ef8a7e; --danger-soft: #4a3330; --success: #7fd19a; --water: #6cc3e6; --food: #f3a06c;
+      --protein: #f095b4; --carbs: #f0cc66; --fat: #b9a8e3;
+      --morning: #f2a25c; --evening: #a3a7ea; --strength: #7fd19a;
+      --on-accent: #1c2225; --overlay: rgba(0,0,0,0.55); --topbar: rgba(45,51,54,0.94);
+    }
+    :root[data-theme="nacht"] {
+      --bg: #151b1e; --card-bg: #1e2629; --inset: #192023; --border: #2d393e;
+      --text: #e7eef0; --text-muted: #9babb1; --shadow: none;
       --primary: #3cc7b4; --primary-ink: #0d2522; --primary-soft: #18342f;
-      --text: #e7eef0; --text-muted: #9babb1; --border: #2d393e; --shadow: none;
-      --danger: #e27b6f; --danger-soft: #3a2421;
-      --success: #6cc98a; --water: #6cbfe0; --food: #f39a62;
+      --danger: #e27b6f; --danger-soft: #3a2421; --success: #6cc98a; --water: #6cbfe0; --food: #f39a62;
       --protein: #ec8fae; --carbs: #f0c860; --fat: #b3a1dd;
       --morning: #f2a25c; --evening: #9da1e6; --strength: #6cc98a;
       --on-accent: #151b1e; --overlay: rgba(0,0,0,0.6); --topbar: rgba(21,27,30,0.94);
     }
-    @media (prefers-color-scheme: dark) {
-      :root[data-theme="auto"] {
-        --bg: #151b1e; --card-bg: #1e2629; --inset: #192023;
-        --primary: #3cc7b4; --primary-ink: #0d2522; --primary-soft: #18342f;
-        --text: #e7eef0; --text-muted: #9babb1; --border: #2d393e; --shadow: none;
-        --danger: #e27b6f; --danger-soft: #3a2421;
-        --success: #6cc98a; --water: #6cbfe0; --food: #f39a62;
-        --protein: #ec8fae; --carbs: #f0c860; --fat: #b3a1dd;
-        --morning: #f2a25c; --evening: #9da1e6; --strength: #6cc98a;
-        --on-accent: #151b1e; --overlay: rgba(0,0,0,0.6); --topbar: rgba(21,27,30,0.94);
-      }
+    :root[data-theme="mint"] {
+      --bg: #e4efeb; --card-bg: #f8fcfa; --inset: #e8f2ee; --border: #cde0d8;
+      --text: #1f2f2a; --text-muted: #5d726a; --shadow: 0 1px 3px rgba(20,60,45,0.07);
+      --primary: #23946a; --primary-ink: #ffffff; --primary-soft: #d2eee0;
+      --danger: #d0574b; --danger-soft: #fbe9e6; --success: #2f9a57; --water: #2b97c2; --food: #ec7e3c;
+      --protein: #df6f93; --carbs: #e0aa2c; --fat: #9a84c8;
+      --morning: #f2a25c; --evening: #8f93dc; --strength: #3fae6c;
+      --on-accent: #1f2f2a; --overlay: rgba(20,45,38,0.45); --topbar: rgba(228,239,235,0.94);
     }
+    :root[data-theme="ozean"] {
+      --bg: #10272b; --card-bg: #183439; --inset: #142e32; --border: #25474d;
+      --text: #e6f3f2; --text-muted: #93b3b2; --shadow: none;
+      --primary: #46d6c2; --primary-ink: #0b2522; --primary-soft: #1d4642;
+      --danger: #ef8a7e; --danger-soft: #43302d; --success: #78d69a; --water: #6fcbec; --food: #f6a26e;
+      --protein: #f095b4; --carbs: #f0cc66; --fat: #b9a8e3;
+      --morning: #f2a25c; --evening: #a3a7ea; --strength: #78d69a;
+      --on-accent: #10272b; --overlay: rgba(0,0,0,0.55); --topbar: rgba(16,39,43,0.94);
+    }
+    .theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .theme-tile { border: 2px solid var(--border); border-radius: 14px; padding: 6px; background: var(--inset); cursor: pointer; color: var(--text); font-size: 12px; font-weight: 600; display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
+    .theme-tile.active { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-soft); }
+    .theme-prev { border-radius: 9px; height: 56px; padding: 7px; display: flex; flex-direction: column; gap: 5px; border: 1px solid rgba(127,127,127,0.25); }
+    .theme-prev .c { border-radius: 6px; flex: 1; padding: 5px; display: flex; flex-direction: column; gap: 4px; justify-content: center; }
+    .theme-prev .l { height: 5px; border-radius: 3px; width: 70%; opacity: 0.75; }
+    .theme-prev .b { height: 7px; border-radius: 4px; width: 45%; }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     [hidden] { display: none !important; }
     html, body { overflow-x: hidden; }
@@ -537,11 +567,8 @@
 
       <div class="card">
         <h2>🎨 Design</h2>
-        <div class="seg" id="themeSeg" style="margin-bottom:0;">
-          <button data-theme-set="light">☀️ Hell</button>
-          <button data-theme-set="dark">🌙 Dunkel</button>
-          <button data-theme-set="auto">📱 Wie Handy</button>
-        </div>
+        <div class="theme-grid" id="themeGrid"></div>
+        <label class="check" style="margin-top:12px;"><input type="checkbox" id="themeAuto"> 📱 Nachts automatisch dunkel (wie am Handy eingestellt)</label>
       </div>
 
       <div class="card">
@@ -663,7 +690,7 @@ function defaultData() {
   return {
     version: 2,
     profile: { height: 178, age: 35, gender: 'male', activity: 1.2, goalWeight: null, override: false, targetCal: 2200, targetWater: 2500 },
-    settings: { provider: '', apiKey: '', model: '', gemKey: '', gemModel: '', theme: 'light' },
+    settings: { provider: '', apiKey: '', model: '', gemKey: '', gemModel: '', theme: 'hell', themeAuto: false },
     days: {},
     weights: [],
     favorites: [],
@@ -1767,14 +1794,31 @@ $('btnResetAll').onclick = () => confirmSheet('Alle Daten löschen?', 'Alle Eint
 /* =====================================================================
    START
    ===================================================================== */
+const THEMES = [
+  { id: 'hell',    name: 'Hellgrau', c: ['#f1f4f5', '#ffffff', '#23303a', '#12968a'] },
+  { id: 'stein',   name: 'Stein',    c: ['#c8d0d4', '#e7ecee', '#1c262c', '#0d8074'] },
+  { id: 'graphit', name: 'Graphit',  c: ['#2d3336', '#394044', '#eef2f3', '#4fcfbd'] },
+  { id: 'mint',    name: 'Mint',     c: ['#e4efeb', '#f8fcfa', '#1f2f2a', '#23946a'] },
+  { id: 'ozean',   name: 'Ozean',    c: ['#10272b', '#183439', '#e6f3f2', '#46d6c2'] },
+  { id: 'nacht',   name: 'Nacht',    c: ['#151b1e', '#1e2629', '#e7eef0', '#3cc7b4'] }
+];
+const LEGACY_THEME = { light: 'hell', dark: 'nacht' };
 function applyTheme() {
-  const t = data.settings.theme || 'light';
-  document.documentElement.dataset.theme = t;
-  const dark = t === 'dark' || (t === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-  document.querySelector('meta[name="theme-color"]').content = dark ? '#151b1e' : '#f1f4f5';
-  document.querySelectorAll('[data-theme-set]').forEach(b => b.classList.toggle('active', b.dataset.themeSet === t));
+  let t = data.settings.theme || 'hell';
+  if (LEGACY_THEME[t]) t = LEGACY_THEME[t];
+  if (t === 'auto') t = 'hell';
+  const autoDark = data.settings.themeAuto && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const shown = autoDark ? 'nacht' : t;
+  document.documentElement.dataset.theme = shown;
+  const th = THEMES.find(x => x.id === shown) || THEMES[0];
+  document.querySelector('meta[name="theme-color"]').content = th.c[0];
+  $('themeGrid').innerHTML = THEMES.map(x => `<button class="theme-tile ${x.id === t ? 'active' : ''}" data-theme-id="${x.id}">
+      <div class="theme-prev" style="background:${x.c[0]}"><div class="c" style="background:${x.c[1]}"><div class="l" style="background:${x.c[2]}"></div><div class="b" style="background:${x.c[3]}"></div></div></div>
+      ${x.name}</button>`).join('');
+  $('themeGrid').querySelectorAll('[data-theme-id]').forEach(b => b.onclick = () => { data.settings.theme = b.dataset.themeId; save(); applyTheme(); renderAll(); });
+  $('themeAuto').checked = !!data.settings.themeAuto;
 }
-document.querySelectorAll('[data-theme-set]').forEach(b => b.onclick = () => { data.settings.theme = b.dataset.themeSet; save(); applyTheme(); renderAll(); });
+$('themeAuto').onchange = () => { data.settings.themeAuto = $('themeAuto').checked; save(); applyTheme(); renderAll(); };
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
 
 function renderAll() {
