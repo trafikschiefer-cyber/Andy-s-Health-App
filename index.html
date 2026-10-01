@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Andy's Health</title>
-  <meta name="theme-color" content="#faf6f0">
+  <meta name="theme-color" content="#f1f4f5">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -15,55 +15,55 @@
   <style>
     /* Helles, warmes Design (Standard) */
     :root {
-      --bg: #faf6f0;
+      --bg: #f1f4f5;
       --card-bg: #ffffff;
-      --inset: #f5efe6;
-      --primary: #2f8f7a;
+      --inset: #edf1f2;
+      --primary: #12968a;
       --primary-ink: #ffffff;
-      --primary-soft: #e3f2ee;
-      --text: #2e2a25;
-      --text-muted: #7c7268;
-      --border: #ebe3d7;
-      --shadow: 0 1px 3px rgba(80,60,30,0.06);
+      --primary-soft: #dcf2ee;
+      --text: #23303a;
+      --text-muted: #6a7880;
+      --border: #dde4e7;
+      --shadow: 0 1px 3px rgba(20,45,55,0.07);
       --danger: #d0574b;
       --danger-soft: #fbe9e6;
-      --success: #5f9e45;
+      --success: #3f9d5a;
       --warning: #e0a030;
-      --water: #3a9bc4;
+      --water: #2b97c2;
       --food: #ec7e3c;
       --protein: #df6f93;
       --carbs: #e6b33d;
       --fat: #9a84c8;
       --morning: #f2a25c;
       --evening: #8f93dc;
-      --strength: #7cb85f;
-      --on-accent: #2e2a25;
-      --overlay: rgba(46,42,37,0.45);
-      --topbar: rgba(250,246,240,0.94);
+      --strength: #4fb37a;
+      --on-accent: #1d2a31;
+      --overlay: rgba(25,38,45,0.45);
+      --topbar: rgba(241,244,245,0.94);
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
     /* Dunkles, warmes Design */
     :root[data-theme="dark"] {
-      --bg: #1d1a17; --card-bg: #282420; --inset: #211e1a;
-      --primary: #5cbfa6; --primary-ink: #14231f; --primary-soft: #1f3530;
-      --text: #f2ece3; --text-muted: #b2a797; --border: #3a342d; --shadow: none;
+      --bg: #151b1e; --card-bg: #1e2629; --inset: #192023;
+      --primary: #3cc7b4; --primary-ink: #0d2522; --primary-soft: #18342f;
+      --text: #e7eef0; --text-muted: #9babb1; --border: #2d393e; --shadow: none;
       --danger: #e27b6f; --danger-soft: #3a2421;
-      --success: #8cc670; --water: #6cbfe0; --food: #f39a62;
+      --success: #6cc98a; --water: #6cbfe0; --food: #f39a62;
       --protein: #ec8fae; --carbs: #f0c860; --fat: #b3a1dd;
-      --morning: #f2a25c; --evening: #9da1e6; --strength: #8cc670;
-      --on-accent: #1d1a17; --overlay: rgba(0,0,0,0.6); --topbar: rgba(29,26,23,0.94);
+      --morning: #f2a25c; --evening: #9da1e6; --strength: #6cc98a;
+      --on-accent: #151b1e; --overlay: rgba(0,0,0,0.6); --topbar: rgba(21,27,30,0.94);
     }
     @media (prefers-color-scheme: dark) {
       :root[data-theme="auto"] {
-        --bg: #1d1a17; --card-bg: #282420; --inset: #211e1a;
-        --primary: #5cbfa6; --primary-ink: #14231f; --primary-soft: #1f3530;
-        --text: #f2ece3; --text-muted: #b2a797; --border: #3a342d; --shadow: none;
+        --bg: #151b1e; --card-bg: #1e2629; --inset: #192023;
+        --primary: #3cc7b4; --primary-ink: #0d2522; --primary-soft: #18342f;
+        --text: #e7eef0; --text-muted: #9babb1; --border: #2d393e; --shadow: none;
         --danger: #e27b6f; --danger-soft: #3a2421;
-        --success: #8cc670; --water: #6cbfe0; --food: #f39a62;
+        --success: #6cc98a; --water: #6cbfe0; --food: #f39a62;
         --protein: #ec8fae; --carbs: #f0c860; --fat: #b3a1dd;
-        --morning: #f2a25c; --evening: #9da1e6; --strength: #8cc670;
-        --on-accent: #1d1a17; --overlay: rgba(0,0,0,0.6); --topbar: rgba(29,26,23,0.94);
+        --morning: #f2a25c; --evening: #9da1e6; --strength: #6cc98a;
+        --on-accent: #151b1e; --overlay: rgba(0,0,0,0.6); --topbar: rgba(21,27,30,0.94);
       }
     }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -329,7 +329,7 @@
 
   <div id="loadingOverlay" class="loading-overlay">
     <div class="spinner"></div>
-    <div style="font-size:16px;font-weight:700;" id="loadingTitle">Claude analysiert die Mahlzeit …</div>
+    <div style="font-size:16px;font-weight:700;" id="loadingTitle">KI analysiert die Mahlzeit …</div>
     <div style="font-size:12px;color:var(--text-muted);margin-top:8px;" id="loadingText">einen Moment</div>
   </div>
 
@@ -523,12 +523,16 @@
       </div>
 
       <div class="card">
-        <h2>🤖 KI-Einstellungen (Claude)</h2>
-        <div class="form-group"><label for="apiKeyInput">Anthropic API-Key</label><input type="password" id="apiKeyInput" placeholder="sk-ant-…" autocomplete="off"></div>
+        <h2>🤖 KI für Foto-Erkennung</h2>
+        <div class="seg" id="providerSeg">
+          <button data-prov="gemini">Gemini · gratis</button>
+          <button data-prov="claude">Claude · ca. 1 Cent/Foto</button>
+        </div>
+        <div class="form-group"><label for="apiKeyInput" id="keyLabel">API-Key</label><input type="password" id="apiKeyInput" autocomplete="off"></div>
         <div class="form-group"><label for="modelSelect">Modell</label><select id="modelSelect"><option value="">automatisch wählen</option></select></div>
         <button class="btn-main secondary" id="btnTestKey">Verbindung testen</button>
         <p class="hint" id="keyStatus"></p>
-        <p class="hint">Den Key bekommst du unter console.anthropic.com → API Keys. Er wird nur auf diesem Gerät gespeichert. Tipp: dort ein monatliches Ausgabenlimit setzen.</p>
+        <p class="hint" id="keyHint"></p>
       </div>
 
       <div class="card">
@@ -659,7 +663,7 @@ function defaultData() {
   return {
     version: 2,
     profile: { height: 178, age: 35, gender: 'male', activity: 1.2, goalWeight: null, override: false, targetCal: 2200, targetWater: 2500 },
-    settings: { apiKey: '', model: '' },
+    settings: { provider: '', apiKey: '', model: '', gemKey: '', gemModel: '', theme: 'light' },
     days: {},
     weights: [],
     favorites: [],
@@ -674,10 +678,20 @@ function loadData() {
     if (raw) {
       const d = JSON.parse(raw);
       const base = defaultData();
-      return Object.assign(base, d, { profile: Object.assign(base.profile, d.profile), settings: Object.assign(base.settings, d.settings) });
+      return fixSettings(Object.assign(base, d, { profile: Object.assign(base.profile, d.profile), settings: Object.assign(base.settings, d.settings) }));
     }
   } catch (e) { console.warn(e); }
-  return migrateOld();
+  return fixSettings(migrateOld());
+}
+
+// Alten Gemini-Key aus Version 1 übernehmen und Anbieter festlegen
+function fixSettings(d) {
+  try {
+    const old = localStorage.getItem('andys_health_api_key');
+    if (!d.settings.gemKey && old && !old.startsWith('sk-ant')) d.settings.gemKey = old.trim();
+  } catch (e) {}
+  if (!d.settings.provider) d.settings.provider = (d.settings.apiKey && !d.settings.gemKey) ? 'claude' : 'gemini';
+  return d;
 }
 
 // Übernimmt Daten aus der ersten Version (Schlüssel andys_health_*)
@@ -1000,9 +1014,9 @@ const itemsLine = items => (items || []).map(i => i.grams ? `${i.name} ${fmt(i.g
 function foodSheet(opts) {
   opts = opts || {};
   const e = opts.entry;
-  const hasKey = !!data.settings.apiKey;
+  const hasKey = aiReady();
   let items = (opts.items || (e && e.items) || (e ? [{ name: e.name, grams: 0, kcal: e.kcal, protein: e.protein, carbs: e.carbs, fat: e.fat }] : [])).map(normItem);
-  const title = e ? '✏️ Mahlzeit bearbeiten' : (opts.items ? '🤖 Das hat Claude erkannt' : '✍️ Essen eintragen');
+  const title = e ? '✏️ Mahlzeit bearbeiten' : (opts.items ? `🤖 Das hat ${aiName()} erkannt` : '✍️ Essen eintragen');
   const mealName = opts.title || (e && e.items ? e.name : '') || '';
   openSheet(`<h2>${title}</h2>
     ${opts.image ? `<img class="preview" src="${opts.image}" alt="">` : ''}
@@ -1014,7 +1028,7 @@ function foodSheet(opts) {
       <input id="fAdd" placeholder="${items.length ? 'Vergessen? z. B. 1 EL Ketchup' : 'z. B. 200 g Hühnerbrust, 150 g Reis'}" enterkeyhint="done">
       <button class="btn-main" id="fAddBtn">${hasKey ? '＋ Schätzen' : '＋'}</button>
     </div>
-    <p class="hint" style="margin:-4px 0 10px;">${hasKey ? 'Claude schätzt Menge und Nährwerte – mehrere Lebensmittel mit Komma trennen.' : 'Ohne Claude-API-Key bitte die Werte selbst eintragen.'}</p>
+    <p class="hint" style="margin:-4px 0 10px;">${hasKey ? `${aiName()} schätzt Menge und Nährwerte – mehrere Lebensmittel mit Komma trennen.` : 'Ohne API-Key (Profil → KI) bitte die Werte selbst eintragen.'}</p>
     <div class="totals" id="fTotals"></div>
     ${e ? `<div class="form-group" style="margin-top:10px;"><label>Uhrzeit</label><input id="fTime" type="time" value="${esc(e.time || '')}"></div>` : ''}
     <label class="check" style="margin-top:12px;"><input type="checkbox" id="fFav" ${e && isFavorite(e.name) ? 'checked' : ''}> ⭐ Als Favorit merken</label>
@@ -1069,7 +1083,7 @@ function foodSheet(opts) {
       if (hasKey) {
         btn.disabled = true; btn.textContent = '⏳';
         try {
-          const r = await claudeNutrition([{ type: 'text', text: 'Liste diese Lebensmittel einzeln mit Menge und Nährwerten auf: ' + txt }]);
+          const r = await aiNutrition('Liste diese Lebensmittel einzeln mit Menge und Nährwerten auf: ' + txt);
           r.items.forEach(it => items.push(normItem(it)));
           if (!q('#fTitle').value && !items.length) q('#fTitle').value = r.name;
           q('#fAdd').value = '';
@@ -1178,8 +1192,17 @@ $('btnSportSave').onclick = () => {
 updateSportForm();
 
 /* =====================================================================
-   KI: Claude
+   KI: Gemini (gratis) oder Claude
    ===================================================================== */
+const prov = () => data.settings.provider || 'gemini';
+const aiName = () => prov() === 'gemini' ? 'Gemini' : 'Claude';
+const aiKey = () => (prov() === 'gemini' ? data.settings.gemKey : data.settings.apiKey) || '';
+const aiReady = () => !!aiKey();
+const GEMINI_FALLBACK = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.5-flash-lite'];
+
+function httpError(msg, status) { const e = new Error(msg); e.status = status; return e; }
+
+/* ----- Claude ----- */
 async function claudeFetch(path, opts) {
   const key = data.settings.apiKey;
   if (!key) throw new Error('Bitte zuerst im Profil deinen Claude-API-Key eintragen.');
@@ -1195,31 +1218,110 @@ async function claudeFetch(path, opts) {
   try { body = await res.json(); } catch (e) {}
   if (!res.ok) {
     const msg = body && body.error ? body.error.message : res.statusText;
-    if (res.status === 401) throw new Error('API-Key ungültig – bitte im Profil prüfen.');
-    if (res.status === 429 || res.status === 529) throw new Error('Claude ist gerade ausgelastet – bitte gleich nochmal versuchen.');
-    if (res.status === 400 && /credit|balance/i.test(msg || '')) throw new Error('Kein Guthaben am Anthropic-Konto.');
-    const err = new Error('Claude-Fehler: ' + msg); err.status = res.status; throw err;
+    if (res.status === 401) throw httpError('Claude-API-Key ungültig – bitte im Profil prüfen.', 401);
+    if (res.status === 429 || res.status === 529) throw httpError('Claude ist gerade ausgelastet – bitte gleich nochmal versuchen.', res.status);
+    if (res.status === 400 && /credit|balance/i.test(msg || '')) throw httpError('Kein Guthaben am Anthropic-Konto.', 400);
+    throw httpError('Claude-Fehler: ' + msg, res.status);
   }
   return body;
 }
-
-async function listModels() {
+async function claudeModels() {
   const r = await claudeFetch('/v1/models?limit=100', { method: 'GET' });
-  return (r.data || []).map(m => ({ id: m.id, name: m.display_name || m.id }));
-}
-function pickDefaultModel(models) {
+  const models = (r.data || []).map(m => ({ id: m.id, name: m.display_name || m.id }));
   const ids = models.map(m => m.id);
-  return ids.find(i => /sonnet/i.test(i)) || ids.find(i => /haiku/i.test(i)) || ids[0] || FALLBACK_MODEL;
+  const best = ids.find(i => /sonnet/i.test(i)) || ids.find(i => /haiku/i.test(i)) || ids[0] || 'claude-sonnet-4-5';
+  return { models, order: [best] };
 }
+async function claudeRaw(text, image) {
+  const content = [];
+  if (image) content.push({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: image } });
+  content.push({ type: 'text', text });
+  const run = m => claudeFetch('/v1/messages', {
+    method: 'POST',
+    body: JSON.stringify({ model: m, max_tokens: 1200, system: NUTRI_SYSTEM, messages: [{ role: 'user', content }] })
+  });
+  let r;
+  try { r = await run(await resolveModel()); }
+  catch (e) {
+    // Modell nicht (mehr) verfügbar → automatisch neu wählen
+    if (e.status === 404 || (e.status === 400 && /model/i.test(e.message))) {
+      data.settings.autoModel = null; data.settings.model = ''; save();
+      r = await run(await resolveModel());
+    } else throw e;
+  }
+  return (r.content || []).filter(c => c.type === 'text').map(c => c.text).join('');
+}
+
+/* ----- Gemini ----- */
+async function gemFetch(path, body) {
+  const key = data.settings.gemKey;
+  if (!key) throw new Error('Bitte zuerst im Profil deinen Gemini-API-Key eintragen.');
+  const url = `https://generativelanguage.googleapis.com/v1beta/${path}${path.includes('?') ? '&' : '?'}key=${encodeURIComponent(key)}`;
+  const res = await fetch(url, body ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) } : {});
+  let j = null;
+  try { j = await res.json(); } catch (e) {}
+  if (!res.ok) {
+    const msg = j && j.error ? j.error.message : res.statusText;
+    if (/API key not valid|API_KEY_INVALID/i.test(msg || '') || res.status === 401 || res.status === 403) throw httpError('Gemini-API-Key ungültig – bitte im Profil prüfen.', 401);
+    if (res.status === 429) throw httpError('Gratis-Kontingent von Gemini gerade ausgeschöpft – in ein paar Minuten nochmal versuchen.', 429);
+    if (res.status === 503 || res.status === 500) throw httpError('Gemini ist gerade überlastet – bitte gleich nochmal versuchen.', res.status);
+    throw httpError('Gemini-Fehler: ' + msg, res.status);
+  }
+  return j;
+}
+async function gemModels() {
+  const r = await gemFetch('models?pageSize=200');
+  const models = (r.models || [])
+    .filter(m => (m.supportedGenerationMethods || []).includes('generateContent'))
+    .map(m => ({ id: m.name.replace(/^models\//, ''), name: m.displayName || m.name }))
+    .filter(m => /^gemini-/.test(m.id) && !/embed|tts|image|live|audio|native|thinking|computer|robotics/i.test(m.id));
+  const ver = id => { const v = id.match(/gemini-(\d+(?:\.\d+)?)/); return v ? parseFloat(v[1]) : 0; };
+  const tier = id => /flash-lite/.test(id) ? 1 : /flash/.test(id) ? 0 : 2;   // Flash zuerst (großzügigstes Gratis-Kontingent)
+  const unstable = id => /preview|exp/.test(id) ? 1 : 0;
+  const order = models.map(m => m.id).sort((a, b) => tier(a) - tier(b) || unstable(a) - unstable(b) || ver(b) - ver(a));
+  return { models, order };
+}
+async function gemRaw(text, image) {
+  let order = data.settings.gemModel ? [data.settings.gemModel] : (data.settings.gemOrder || []);
+  if (!order.length) {
+    try { order = (await gemModels()).order; data.settings.gemOrder = order.slice(0, 4); save(); }
+    catch (e) { if (e.status === 401) throw e; order = GEMINI_FALLBACK; }
+  }
+  const parts = [];
+  if (image) parts.push({ inline_data: { mime_type: 'image/jpeg', data: image } });
+  parts.push({ text });
+  let lastErr;
+  for (const m of order.slice(0, 4)) {
+    try {
+      const r = await gemFetch(`models/${m}:generateContent`, {
+        systemInstruction: { parts: [{ text: NUTRI_SYSTEM }] },
+        contents: [{ role: 'user', parts }],
+        generationConfig: { temperature: 0.2, responseMimeType: 'application/json' }
+      });
+      const c = r.candidates && r.candidates[0];
+      const out = c && c.content ? (c.content.parts || []).filter(p => !p.thought).map(p => p.text || '').join('') : '';
+      if (out) {
+        // funktionierendes Modell beim nächsten Mal zuerst probieren
+        if (!data.settings.gemModel && order[0] !== m) { data.settings.gemOrder = [m].concat(order.filter(x => x !== m)).slice(0, 4); save(); }
+        return out;
+      }
+      lastErr = new Error('Gemini hat keine Antwort geliefert.');
+    } catch (e) {
+      lastErr = e;
+      if (e.status === 401) throw e;           // falscher Key → nicht weiter probieren
+      if (e.status === 404) { data.settings.gemOrder = null; data.settings.gemModel = ''; save(); }
+    }
+  }
+  throw lastErr || new Error('Gemini nicht erreichbar.');
+}
+
+/* ----- gemeinsam ----- */
+async function listModels() { return prov() === 'gemini' ? gemModels() : claudeModels(); }
 async function resolveModel() {
   if (data.settings.model) return data.settings.model;
   if (data.settings.autoModel) return data.settings.autoModel;
-  try {
-    const models = await listModels();
-    data.settings.autoModel = pickDefaultModel(models);
-    save();
-    return data.settings.autoModel;
-  } catch (e) { return FALLBACK_MODEL; }
+  try { data.settings.autoModel = (await claudeModels()).order[0]; save(); return data.settings.autoModel; }
+  catch (e) { return 'claude-sonnet-4-5'; }
 }
 
 const NUTRI_SYSTEM = `Du bist ein präziser Ernährungsassistent für einen Erwachsenen in Österreich.
@@ -1229,22 +1331,8 @@ Antworte AUSSCHLIESSLICH mit einem JSON-Objekt ohne weiteren Text, exakt in dies
 {"name":"kurzer deutscher Name des Gerichts","items":[{"name":"Lebensmittel","grams":0,"kcal":0,"protein":0,"carbs":0,"fat":0}],"confidence":"niedrig|mittel|hoch","hinweis":"ein kurzer Satz, was die Schätzung unsicher macht, oder leer"}
 Nährwerte jeweils für die angegebene Menge, alle Zahlen als ganze Zahlen. Wenn kein Essen erkennbar ist: items leer lassen und im hinweis erklären.`;
 
-async function claudeNutrition(content) {
-  const model = await resolveModel();
-  const run = m => claudeFetch('/v1/messages', {
-    method: 'POST',
-    body: JSON.stringify({ model: m, max_tokens: 1200, system: NUTRI_SYSTEM, messages: [{ role: 'user', content }] })
-  });
-  let r;
-  try { r = await run(model); }
-  catch (e) {
-    // Modell nicht (mehr) verfügbar → automatisch neu wählen
-    if (e.status === 404 || e.status === 400 && /model/i.test(e.message)) {
-      data.settings.autoModel = null; data.settings.model = ''; save();
-      r = await run(await resolveModel());
-    } else throw e;
-  }
-  const text = (r.content || []).filter(c => c.type === 'text').map(c => c.text).join('');
+async function aiNutrition(prompt, image) {
+  const text = prov() === 'gemini' ? await gemRaw(prompt, image) : await claudeRaw(prompt, image);
   const m = text.match(/\{[\s\S]*\}/);
   if (!m) throw new Error('Antwort der KI nicht lesbar – bitte manuell eintragen.');
   const j = JSON.parse(m[0]);
@@ -1278,8 +1366,8 @@ function resizeImage(file, maxSide) {
 }
 
 function openCamera(camera) {
-  if (!data.settings.apiKey) {
-    confirmSheet('Claude-API-Key fehlt', 'Für die Foto-Erkennung brauchst du einen Anthropic-API-Key. Jetzt im Profil eintragen?', 'Zum Profil', () => {
+  if (!aiReady()) {
+    confirmSheet('API-Key fehlt', `Für die Foto-Erkennung brauchst du einen ${aiName()}-API-Key${prov() === 'gemini' ? ' (gratis bei Google)' : ''}. Jetzt im Profil eintragen?`, 'Zum Profil', () => {
       switchTab('profil'); setTimeout(() => $('apiKeyInput').focus(), 200);
     });
     return;
@@ -1293,15 +1381,12 @@ async function handleMealImage(ev) {
   const file = ev.target.files[0];
   ev.target.value = '';
   if (!file) return;
-  showLoading('Claude analysiert die Mahlzeit …', 'Bild wird vorbereitet');
+  showLoading(`${aiName()} analysiert die Mahlzeit …`, 'Bild wird vorbereitet');
   let dataUrl = null;
   try {
     dataUrl = await resizeImage(file, 1280);
     $('loadingText').textContent = 'Nährwerte werden geschätzt';
-    const r = await claudeNutrition([
-      { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: dataUrl.split(',')[1] } },
-      { type: 'text', text: 'Was ist auf diesem Foto und welche Nährwerte hat die gezeigte Portion?' }
-    ]);
+    const r = await aiNutrition('Was ist auf diesem Foto? Liste die Lebensmittel mit Menge und Nährwerten der gezeigten Portion auf.', dataUrl.split(',')[1]);
     hideLoading();
     const note = [r.confidence ? `Sicherheit: ${r.confidence}` : '', r.hinweis].filter(Boolean).join(' – ');
     foodSheet({ items: r.items, title: r.name, image: dataUrl, note: (note ? note + ' · ' : '') + 'Mengen prüfen, Fehlendes unten ergänzen.' });
@@ -1541,11 +1626,7 @@ function renderProfil() {
   $('pGender').value = p.gender; $('pActivity').value = String(p.activity || 1.2);
   $('pOverride').checked = !!p.override; $('overrideBox').hidden = !p.override;
   setIfIdle('pTargetCal', p.targetCal); setIfIdle('pWater', p.targetWater);
-  setIfIdle('apiKeyInput', data.settings.apiKey);
-  if (data.settings.model && !$('modelSelect').querySelector(`option[value="${CSS.escape(data.settings.model)}"]`)) {
-    $('modelSelect').insertAdjacentHTML('beforeend', `<option value="${esc(data.settings.model)}">${esc(data.settings.model)}</option>`);
-  }
-  $('modelSelect').value = data.settings.model || '';
+  renderAiSettings();
 
   const w = latestWeight();
   const first = data.weights[0];
@@ -1602,25 +1683,48 @@ $('btnAddWeight').onclick = () => {
   toast(`⚖️ ${fmtKg(kg)} kg gespeichert`);
 };
 
-$('apiKeyInput').addEventListener('change', () => {
-  data.settings.apiKey = $('apiKeyInput').value.trim();
-  data.settings.autoModel = null;
-  save();
-  if (data.settings.apiKey) testKey();
+const modelKey = () => prov() === 'gemini' ? 'gemModel' : 'model';
+function renderAiSettings() {
+  const g = prov() === 'gemini';
+  document.querySelectorAll('[data-prov]').forEach(b => b.classList.toggle('active', b.dataset.prov === prov()));
+  $('keyLabel').textContent = g ? 'Gemini-API-Key (Google)' : 'Claude-API-Key (Anthropic)';
+  $('apiKeyInput').placeholder = g ? 'AIza…' : 'sk-ant-…';
+  if (document.activeElement !== $('apiKeyInput')) $('apiKeyInput').value = aiKey();
+  const cur = data.settings[modelKey()];
+  const opts = (g ? data.settings.gemModelList : data.settings.claudeModelList) || [];
+  $('modelSelect').innerHTML = '<option value="">automatisch wählen</option>' +
+    opts.map(m => `<option value="${esc(m.id)}">${esc(m.name)}</option>`).join('') +
+    (cur && !opts.some(m => m.id === cur) ? `<option value="${esc(cur)}">${esc(cur)}</option>` : '');
+  $('modelSelect').value = cur || '';
+  $('keyHint').innerHTML = g
+    ? 'Gratis-Key: auf <b>aistudio.google.com/apikey</b> mit dem Google-Konto anmelden → „API-Schlüssel erstellen“. Kostet nichts, ist aber zu Stoßzeiten manchmal ausgelastet – die App probiert dann automatisch ein anderes Gemini-Modell.'
+    : 'Key unter <b>console.anthropic.com</b> → API Keys (braucht Guthaben, ca. 1 Cent pro Foto). Tipp: dort ein monatliches Ausgabenlimit setzen.';
+  if (!aiKey()) $('keyStatus').textContent = '';
+}
+document.querySelectorAll('[data-prov]').forEach(b => b.onclick = () => {
+  data.settings.provider = b.dataset.prov; save();
+  $('keyStatus').textContent = '';
+  renderAiSettings();
 });
-$('modelSelect').onchange = () => { data.settings.model = $('modelSelect').value; save(); };
-$('btnTestKey').onclick = () => { data.settings.apiKey = $('apiKeyInput').value.trim(); save(); testKey(); };
+$('apiKeyInput').addEventListener('change', () => {
+  const v = $('apiKeyInput').value.trim();
+  if (prov() === 'gemini') { data.settings.gemKey = v; data.settings.gemOrder = null; }
+  else { data.settings.apiKey = v; data.settings.autoModel = null; }
+  save();
+  if (v) testKey();
+});
+$('modelSelect').onchange = () => { data.settings[modelKey()] = $('modelSelect').value; save(); };
+$('btnTestKey').onclick = () => { $('apiKeyInput').dispatchEvent(new Event('change')); if (!$('apiKeyInput').value.trim()) $('keyStatus').textContent = 'Bitte zuerst einen Key eintragen.'; };
 
 async function testKey() {
   $('keyStatus').textContent = '⏳ Prüfe Verbindung …';
+  const g = prov() === 'gemini';
   try {
-    const models = await listModels();
-    const cur = data.settings.model;
-    $('modelSelect').innerHTML = '<option value="">automatisch wählen</option>' +
-      models.map(m => `<option value="${esc(m.id)}">${esc(m.name)}</option>`).join('');
-    $('modelSelect').value = models.some(m => m.id === cur) ? cur : '';
-    data.settings.autoModel = pickDefaultModel(models); save();
-    $('keyStatus').textContent = `✅ Verbunden – automatisch genutzt: ${data.settings.autoModel}`;
+    const r = await listModels();
+    if (g) { data.settings.gemModelList = r.models; data.settings.gemOrder = r.order.slice(0, 4); }
+    else { data.settings.claudeModelList = r.models; data.settings.autoModel = r.order[0]; }
+    save(); renderAiSettings();
+    $('keyStatus').textContent = `✅ Verbunden – automatisch genutzt: ${r.order[0] || '–'}`;
   } catch (e) {
     $('keyStatus').textContent = '❌ ' + e.message;
   }
@@ -1630,7 +1734,7 @@ async function testKey() {
 $('btnExport').onclick = () => {
   data.lastBackup = todayKey(); save();
   const copy = JSON.parse(JSON.stringify(data));
-  copy.settings.apiKey = ''; // Key nicht mit in die Datei
+  copy.settings.apiKey = ''; copy.settings.gemKey = ''; // Keys nicht mit in die Datei
   const blob = new Blob([JSON.stringify(copy, null, 1)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -1648,10 +1752,10 @@ $('importInput').onchange = async ev => {
     const d = JSON.parse(await f.text());
     if (!d || typeof d.days !== 'object' || !Array.isArray(d.weights)) throw new Error();
     const nDays = Object.keys(d.days).length;
-    confirmSheet('Sicherung wiederherstellen?', `Die Datei enthält ${nDays} Tage und ${d.weights.length} Gewichtseinträge. Deine aktuellen Daten auf diesem Gerät werden dadurch ersetzt (der API-Key bleibt).`, 'Wiederherstellen', () => {
-      const key = data.settings.apiKey;
+    confirmSheet('Sicherung wiederherstellen?', `Die Datei enthält ${nDays} Tage und ${d.weights.length} Gewichtseinträge. Deine aktuellen Daten auf diesem Gerät werden dadurch ersetzt (die API-Keys bleiben).`, 'Wiederherstellen', () => {
+      const keys = { apiKey: data.settings.apiKey, gemKey: data.settings.gemKey };
       const base = defaultData();
-      data = Object.assign(base, d, { profile: Object.assign(base.profile, d.profile), settings: Object.assign(base.settings, d.settings, { apiKey: key }) });
+      data = Object.assign(base, d, { profile: Object.assign(base.profile, d.profile), settings: Object.assign(base.settings, d.settings, keys) });
       save(); renderAll(); toast('✅ Daten wiederhergestellt');
     });
   } catch (e) { toast('Diese Datei ist keine gültige Sicherung.'); }
@@ -1667,7 +1771,7 @@ function applyTheme() {
   const t = data.settings.theme || 'light';
   document.documentElement.dataset.theme = t;
   const dark = t === 'dark' || (t === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-  document.querySelector('meta[name="theme-color"]').content = dark ? '#1d1a17' : '#faf6f0';
+  document.querySelector('meta[name="theme-color"]').content = dark ? '#151b1e' : '#f1f4f5';
   document.querySelectorAll('[data-theme-set]').forEach(b => b.classList.toggle('active', b.dataset.themeSet === t));
 }
 document.querySelectorAll('[data-theme-set]').forEach(b => b.onclick = () => { data.settings.theme = b.dataset.themeSet; save(); applyTheme(); renderAll(); });
