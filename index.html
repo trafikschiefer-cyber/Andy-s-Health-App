@@ -89,6 +89,11 @@
       --morning: #f2a25c; --evening: #a3a7ea; --strength: #78d69a;
       --on-accent: #10272b; --overlay: rgba(0,0,0,0.55); --topbar: rgba(16,39,43,0.94);
     }
+    .prov-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+    .prov-grid button { border: 2px solid var(--border); background: var(--inset); color: var(--text); border-radius: 12px; padding: 8px; cursor: pointer; display: flex; flex-direction: column; align-items: flex-start; gap: 1px; text-align: left; }
+    .prov-grid button small { color: var(--text-muted); font-size: 11px; }
+    .prov-grid button.active { border-color: var(--primary); background: var(--primary-soft); }
+    .prov-grid button .ok { color: var(--success); }
     .theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
     .theme-tile { border: 2px solid var(--border); border-radius: 14px; padding: 6px; background: var(--inset); cursor: pointer; color: var(--text); font-size: 12px; font-weight: 600; display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
     .theme-tile.active { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-soft); }
@@ -556,15 +561,21 @@
 
       <div class="card">
         <h2>🤖 KI für Foto-Erkennung</h2>
-        <div class="seg" id="providerSeg">
-          <button data-prov="gemini">Gemini · gratis</button>
-          <button data-prov="claude">Claude · ca. 1 Cent/Foto</button>
+        <div class="prov-grid" id="providerSeg">
+          <button data-prov="gemini"><b>Gemini</b><small>gratis · Google</small></button>
+          <button data-prov="groq"><b>Groq</b><small>gratis · schnell</small></button>
+          <button data-prov="openrouter"><b>OpenRouter</b><small>gratis · ~50/Tag</small></button>
+          <button data-prov="claude"><b>Claude</b><small>ca. 1 Cent/Foto</small></button>
         </div>
         <div class="form-group"><label for="apiKeyInput" id="keyLabel">API-Key</label><input type="password" id="apiKeyInput" autocomplete="off"></div>
         <div class="form-group"><label for="modelSelect">Modell</label><select id="modelSelect"><option value="">automatisch wählen</option></select></div>
         <button class="btn-main secondary" id="btnTestKey">Verbindung testen</button>
         <p class="hint" id="keyStatus"></p>
         <p class="hint" id="keyHint"></p>
+        <div class="sub-box">
+          <label class="check"><input type="checkbox" id="aiFallback"> 🔁 Bei Überlastung automatisch anderen Anbieter nehmen</label>
+          <p class="hint" id="fallbackInfo"></p>
+        </div>
       </div>
 
       <div class="card">
@@ -1045,7 +1056,7 @@ function foodSheet(opts) {
   const e = opts.entry;
   const hasKey = aiReady();
   let items = (opts.items || (e && e.items) || (e ? [{ name: e.name, grams: 0, kcal: e.kcal, protein: e.protein, carbs: e.carbs, fat: e.fat }] : [])).map(normItem);
-  const title = e ? '✏️ Mahlzeit bearbeiten' : (opts.items ? `🤖 Das hat ${aiName()} erkannt` : '✍️ Essen eintragen');
+  const title = e ? '✏️ Mahlzeit bearbeiten' : (opts.items ? '🤖 Das hat die KI erkannt' : '✍️ Essen eintragen');
   const mealName = opts.title || (e && e.items ? e.name : '') || '';
   openSheet(`<h2>${title}</h2>
     ${opts.image ? `<img class="preview" src="${opts.image}" alt="">` : ''}
@@ -1057,7 +1068,7 @@ function foodSheet(opts) {
       <input id="fAdd" placeholder="${items.length ? 'Vergessen? z. B. 1 EL Ketchup' : 'z. B. 200 g Hühnerbrust, 150 g Reis'}" enterkeyhint="done">
       <button class="btn-main" id="fAddBtn">${hasKey ? '＋ Schätzen' : '＋'}</button>
     </div>
-    <p class="hint" style="margin:-4px 0 10px;">${hasKey ? `${aiName()} schätzt Menge und Nährwerte – mehrere Lebensmittel mit Komma trennen.` : 'Ohne API-Key (Profil → KI) bitte die Werte selbst eintragen.'}</p>
+    <p class="hint" style="margin:-4px 0 10px;">${hasKey ? `Die KI schätzt Menge und Nährwerte – mehrere Lebensmittel mit Komma trennen.` : 'Ohne API-Key (Profil → KI) bitte die Werte selbst eintragen.'}</p>
     <div class="totals" id="fTotals"></div>
     ${e ? `<div class="form-group" style="margin-top:10px;"><label>Uhrzeit</label><input id="fTime" type="time" value="${esc(e.time || '')}"></div>` : ''}
     <label class="check" style="margin-top:12px;"><input type="checkbox" id="fFav" ${e && isFavorite(e.name) ? 'checked' : ''}> ⭐ Als Favorit merken</label>
@@ -1237,10 +1248,32 @@ updateSportForm();
 /* =====================================================================
    KI: Gemini (gratis) oder Claude
    ===================================================================== */
-const prov = () => data.settings.provider || 'gemini';
-const aiName = () => prov() === 'gemini' ? 'Gemini' : 'Claude';
-const aiKey = () => (prov() === 'gemini' ? data.settings.gemKey : data.settings.apiKey) || '';
-const aiReady = () => !!aiKey();
+const AI = {
+  gemini:     { name: 'Gemini',     key: 'gemKey',  model: 'gemModel',  list: 'gemModelList',    ph: 'AIza…',
+                label: 'Gemini-API-Key (Google)',
+                hint: 'Gratis-Key: <b>aistudio.google.com/apikey</b> → mit Google-Konto anmelden → „API-Schlüssel erstellen“. Zu Stoßzeiten oft ausgelastet.' },
+  groq:       { name: 'Groq',       key: 'groqKey', model: 'groqModel', list: 'groqModelList',   ph: 'gsk_…',
+                label: 'Groq-API-Key',
+                hint: 'Gratis-Key: <b>console.groq.com/keys</b> → anmelden (Google-Konto geht) → „Create API Key“. Sehr schnell, großzügiges Gratis-Kontingent, keine Kreditkarte.' },
+  openrouter: { name: 'OpenRouter', key: 'orKey',   model: 'orModel',   list: 'orModelList',     ph: 'sk-or-…',
+                label: 'OpenRouter-API-Key',
+                hint: 'Gratis-Key: <b>openrouter.ai/keys</b> → anmelden → „Create Key“. Nutzt nur kostenlose Modelle (ca. 50 Anfragen pro Tag), keine Kreditkarte nötig.' },
+  claude:     { name: 'Claude',     key: 'apiKey',  model: 'model',     list: 'claudeModelList', ph: 'sk-ant-…',
+                label: 'Claude-API-Key (Anthropic)',
+                hint: 'Key unter <b>console.anthropic.com</b> → API Keys (braucht Guthaben, ca. 1 Cent pro Foto). Tipp: dort ein monatliches Ausgabenlimit setzen.' }
+};
+const AI_ORDER = ['gemini', 'groq', 'openrouter', 'claude'];
+const prov = () => AI[data.settings.provider] ? data.settings.provider : 'gemini';
+const keyOf = pv => (data.settings[AI[pv].key] || '').trim();
+const aiName = () => AI[prov()].name;
+const aiKey = () => keyOf(prov());
+// Reihenfolge der Versuche: gewählter Anbieter zuerst, dann (falls erlaubt) alle anderen mit Key
+function aiChain() {
+  const chain = [prov()];
+  if (data.settings.aiFallback !== false) AI_ORDER.forEach(pv => { if (pv !== prov() && keyOf(pv)) chain.push(pv); });
+  return chain.filter(pv => keyOf(pv));
+}
+const aiReady = () => aiChain().length > 0;
 const GEMINI_FALLBACK = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.5-flash-lite'];
 
 function httpError(msg, status) { const e = new Error(msg); e.status = status; return e; }
@@ -1358,8 +1391,84 @@ async function gemRaw(text, image) {
   throw lastErr || new Error('Gemini nicht erreichbar.');
 }
 
+/* ----- Groq & OpenRouter (OpenAI-kompatibel) ----- */
+const OA_BASE = { groq: 'https://api.groq.com/openai/v1', openrouter: 'https://openrouter.ai/api/v1' };
+const GROQ_FALLBACK = ['qwen/qwen3.8-27b', 'meta-llama/llama-4-scout-17b-16e-instruct', 'meta-llama/llama-4-maverick-17b-128e-instruct'];
+const OR_FALLBACK = ['openrouter/free'];
+
+async function oaFetch(pv, path, body) {
+  const key = keyOf(pv);
+  if (!key) throw new Error(`Bitte zuerst im Profil deinen ${AI[pv].name}-API-Key eintragen.`);
+  const headers = { 'Authorization': 'Bearer ' + key };
+  if (body) headers['Content-Type'] = 'application/json';
+  if (pv === 'openrouter') { headers['HTTP-Referer'] = location.origin; headers['X-Title'] = "Andy's Health"; }
+  const res = await fetch(OA_BASE[pv] + path, body ? { method: 'POST', headers, body: JSON.stringify(body) } : { headers });
+  let j = null;
+  try { j = await res.json(); } catch (e) {}
+  if (!res.ok) {
+    const msg = j && j.error ? (j.error.message || JSON.stringify(j.error)) : res.statusText;
+    const n = AI[pv].name;
+    if (res.status === 401 || res.status === 403) throw httpError(`${n}-API-Key ungültig – bitte im Profil prüfen.`, 401);
+    if (res.status === 429) throw httpError(`Gratis-Limit bei ${n} gerade erreicht – später nochmal versuchen.`, 429);
+    if (res.status >= 500) throw httpError(`${n} ist gerade überlastet.`, res.status);
+    throw httpError(`${n}-Fehler: ${msg}`, res.status);
+  }
+  return j;
+}
+
+async function oaModels(pv) {
+  const r = await oaFetch(pv, '/models');
+  let list = (r.data || []);
+  if (pv === 'openrouter') {
+    // nur kostenlose Modelle, die Bilder verstehen
+    list = list.filter(m => {
+      const inp = (m.architecture && (m.architecture.input_modalities || [])) || [];
+      const free = m.pricing && Number(m.pricing.prompt) === 0 && Number(m.pricing.completion) === 0;
+      return free && (inp.includes('image') || /image/.test((m.architecture || {}).modality || ''));
+    });
+  } else {
+    list = list.filter(m => m.active !== false && /vision|vl\b|-vl|llama-4|scout|maverick|qwen3\.\d|gemma-3|llava|pixtral/i.test(m.id));
+  }
+  const models = list.map(m => ({ id: m.id, name: m.name || m.id }));
+  const pref = id => /gemini|qwen|llama-4|mistral|gemma/i.test(id) ? 0 : 1;
+  const fb = pv === 'groq' ? GROQ_FALLBACK : OR_FALLBACK;
+  const order = models.map(m => m.id).sort((a, b) => (fb.indexOf(a) < 0 ? 99 : fb.indexOf(a)) - (fb.indexOf(b) < 0 ? 99 : fb.indexOf(b)) || pref(a) - pref(b));
+  return { models, order: order.length ? order : fb };
+}
+
+async function oaRaw(pv, text, image) {
+  const st = data.settings;
+  let order = st[AI[pv].model] ? [st[AI[pv].model]] : (st[pv + 'Order'] || []);
+  if (!order.length) {
+    try { order = (await oaModels(pv)).order; st[pv + 'Order'] = order.slice(0, 4); save(); }
+    catch (e) { if (e.status === 401) throw e; order = pv === 'groq' ? GROQ_FALLBACK : OR_FALLBACK; }
+  }
+  const content = [{ type: 'text', text }];
+  if (image) content.push({ type: 'image_url', image_url: { url: 'data:image/jpeg;base64,' + image } });
+  let lastErr;
+  for (const m of order.slice(0, 3)) {
+    try {
+      const r = await oaFetch(pv, '/chat/completions', {
+        model: m, temperature: 0.2, max_tokens: 1500,
+        messages: [{ role: 'system', content: NUTRI_SYSTEM }, { role: 'user', content }]
+      });
+      const out = r.choices && r.choices[0] && r.choices[0].message ? String(r.choices[0].message.content || '') : '';
+      if (out) {
+        if (!st[AI[pv].model] && order[0] !== m) { st[pv + 'Order'] = [m].concat(order.filter(x => x !== m)).slice(0, 4); save(); }
+        return out;
+      }
+      lastErr = new Error(`${AI[pv].name} hat keine Antwort geliefert.`);
+    } catch (e) {
+      lastErr = e;
+      if (e.status === 401) throw e;
+      if (e.status === 404 || e.status === 400) { st[pv + 'Order'] = null; save(); }
+    }
+  }
+  throw lastErr || new Error(`${AI[pv].name} nicht erreichbar.`);
+}
+
 /* ----- gemeinsam ----- */
-async function listModels() { return prov() === 'gemini' ? gemModels() : claudeModels(); }
+async function listModels(pv) { pv = pv || prov(); return pv === 'gemini' ? gemModels() : pv === 'claude' ? claudeModels() : oaModels(pv); }
 async function resolveModel() {
   if (data.settings.model) return data.settings.model;
   if (data.settings.autoModel) return data.settings.autoModel;
@@ -1375,7 +1484,15 @@ Antworte AUSSCHLIESSLICH mit einem JSON-Objekt ohne weiteren Text, exakt in dies
 Nährwerte jeweils für die angegebene Menge, alle Zahlen als ganze Zahlen. Wenn kein Essen erkennbar ist: items leer lassen und im hinweis erklären.`;
 
 async function aiNutrition(prompt, image) {
-  const text = prov() === 'gemini' ? await gemRaw(prompt, image) : await claudeRaw(prompt, image);
+  let text = '', via = '', firstErr = null;
+  for (const pv of aiChain()) {
+    try {
+      text = pv === 'gemini' ? await gemRaw(prompt, image) : pv === 'claude' ? await claudeRaw(prompt, image) : await oaRaw(pv, prompt, image);
+      via = AI[pv].name;
+      if (text.match(/\{[\s\S]*\}/)) break;
+    } catch (e) { firstErr = firstErr || e; }
+  }
+  if (!text) throw firstErr || new Error('Kein KI-Anbieter eingerichtet.');
   const m = text.match(/\{[\s\S]*\}/);
   if (!m) throw new Error('Antwort der KI nicht lesbar – bitte manuell eintragen.');
   const j = JSON.parse(m[0]);
@@ -1386,7 +1503,7 @@ async function aiNutrition(prompt, image) {
       kcal: Math.round(num(it.kcal)), protein: Math.round(num(it.protein)),
       carbs: Math.round(num(it.carbs)), fat: Math.round(num(it.fat))
     })),
-    confidence: j.confidence || '', hinweis: j.hinweis || ''
+    confidence: j.confidence || '', hinweis: j.hinweis || '', via
   };
 }
 
@@ -1410,7 +1527,7 @@ function resizeImage(file, maxSide) {
 
 function openCamera(camera) {
   if (!aiReady()) {
-    confirmSheet('API-Key fehlt', `Für die Foto-Erkennung brauchst du einen ${aiName()}-API-Key${prov() === 'gemini' ? ' (gratis bei Google)' : ''}. Jetzt im Profil eintragen?`, 'Zum Profil', () => {
+    confirmSheet('API-Key fehlt', 'Für die Foto-Erkennung brauchst du einen API-Key – Gemini, Groq und OpenRouter gibt es gratis. Jetzt im Profil eintragen?', 'Zum Profil', () => {
       switchTab('profil'); setTimeout(() => $('apiKeyInput').focus(), 200);
     });
     return;
@@ -1424,14 +1541,14 @@ async function handleMealImage(ev) {
   const file = ev.target.files[0];
   ev.target.value = '';
   if (!file) return;
-  showLoading(`${aiName()} analysiert die Mahlzeit …`, 'Bild wird vorbereitet');
+  showLoading('KI analysiert die Mahlzeit …', 'Bild wird vorbereitet');
   let dataUrl = null;
   try {
     dataUrl = await resizeImage(file, 1280);
-    $('loadingText').textContent = 'Nährwerte werden geschätzt';
+    $('loadingText').textContent = aiChain().length > 1 ? `Nährwerte werden geschätzt (${aiName()}, bei Überlastung automatisch ${aiChain().slice(1).map(p => AI[p].name).join(' / ')})` : 'Nährwerte werden geschätzt';
     const r = await aiNutrition('Was ist auf diesem Foto? Liste die Lebensmittel mit Menge und Nährwerten der gezeigten Portion auf.', dataUrl.split(',')[1]);
     hideLoading();
-    const note = [r.confidence ? `Sicherheit: ${r.confidence}` : '', r.hinweis].filter(Boolean).join(' – ');
+    const note = [r.via && r.via !== aiName() ? `Ersatzweise von ${r.via} erkannt` : '', r.confidence ? `Sicherheit: ${r.confidence}` : '', r.hinweis].filter(Boolean).join(' – ');
     foodSheet({ items: r.items, title: r.name, image: dataUrl, note: (note ? note + ' · ' : '') + 'Mengen prüfen, Fehlendes unten ergänzen.' });
   } catch (err) {
     hideLoading();
@@ -1726,22 +1843,28 @@ $('btnAddWeight').onclick = () => {
   toast(`⚖️ ${fmtKg(kg)} kg gespeichert`);
 };
 
-const modelKey = () => prov() === 'gemini' ? 'gemModel' : 'model';
+const modelKey = () => AI[prov()].model;
 function renderAiSettings() {
-  const g = prov() === 'gemini';
-  document.querySelectorAll('[data-prov]').forEach(b => b.classList.toggle('active', b.dataset.prov === prov()));
-  $('keyLabel').textContent = g ? 'Gemini-API-Key (Google)' : 'Claude-API-Key (Anthropic)';
-  $('apiKeyInput').placeholder = g ? 'AIza…' : 'sk-ant-…';
+  const pv = prov(), cfg = AI[pv];
+  document.querySelectorAll('[data-prov]').forEach(b => {
+    b.classList.toggle('active', b.dataset.prov === pv);
+    const hasK = !!keyOf(b.dataset.prov);
+    b.querySelector('b').innerHTML = esc(AI[b.dataset.prov].name) + (hasK ? ' <span class="ok">✓</span>' : '');
+  });
+  $('keyLabel').textContent = cfg.label;
+  $('apiKeyInput').placeholder = cfg.ph;
   if (document.activeElement !== $('apiKeyInput')) $('apiKeyInput').value = aiKey();
-  const cur = data.settings[modelKey()];
-  const opts = (g ? data.settings.gemModelList : data.settings.claudeModelList) || [];
+  const cur = data.settings[cfg.model];
+  const opts = data.settings[cfg.list] || [];
   $('modelSelect').innerHTML = '<option value="">automatisch wählen</option>' +
     opts.map(m => `<option value="${esc(m.id)}">${esc(m.name)}</option>`).join('') +
     (cur && !opts.some(m => m.id === cur) ? `<option value="${esc(cur)}">${esc(cur)}</option>` : '');
   $('modelSelect').value = cur || '';
-  $('keyHint').innerHTML = g
-    ? 'Gratis-Key: auf <b>aistudio.google.com/apikey</b> mit dem Google-Konto anmelden → „API-Schlüssel erstellen“. Kostet nichts, ist aber zu Stoßzeiten manchmal ausgelastet – die App probiert dann automatisch ein anderes Gemini-Modell.'
-    : 'Key unter <b>console.anthropic.com</b> → API Keys (braucht Guthaben, ca. 1 Cent pro Foto). Tipp: dort ein monatliches Ausgabenlimit setzen.';
+  $('keyHint').innerHTML = cfg.hint;
+  $('aiFallback').checked = data.settings.aiFallback !== false;
+  const others = AI_ORDER.filter(p => p !== pv && keyOf(p)).map(p => AI[p].name);
+  $('fallbackInfo').textContent = data.settings.aiFallback === false ? '' :
+    (others.length ? `Ersatz bei Überlastung: ${others.join(', ')}` : 'Tipp: Trag bei einem zweiten Gratis-Anbieter einen Key ein (✓ = Key vorhanden) – dann springt die App bei Überlastung automatisch dorthin.');
   if (!aiKey()) $('keyStatus').textContent = '';
 }
 document.querySelectorAll('[data-prov]').forEach(b => b.onclick = () => {
@@ -1749,27 +1872,31 @@ document.querySelectorAll('[data-prov]').forEach(b => b.onclick = () => {
   $('keyStatus').textContent = '';
   renderAiSettings();
 });
+$('aiFallback').onchange = () => { data.settings.aiFallback = $('aiFallback').checked; save(); renderAiSettings(); };
 $('apiKeyInput').addEventListener('change', () => {
   const v = $('apiKeyInput').value.trim();
-  if (prov() === 'gemini') { data.settings.gemKey = v; data.settings.gemOrder = null; }
-  else { data.settings.apiKey = v; data.settings.autoModel = null; }
-  save();
+  const pv = prov();
+  data.settings[AI[pv].key] = v;
+  data.settings[pv + 'Order'] = null;
+  if (pv === 'claude') data.settings.autoModel = null;
+  save(); renderAiSettings();
   if (v) testKey();
 });
 $('modelSelect').onchange = () => { data.settings[modelKey()] = $('modelSelect').value; save(); };
-$('btnTestKey').onclick = () => { $('apiKeyInput').dispatchEvent(new Event('change')); if (!$('apiKeyInput').value.trim()) $('keyStatus').textContent = 'Bitte zuerst einen Key eintragen.'; };
+$('btnTestKey').onclick = () => { if (!$('apiKeyInput').value.trim()) { $('keyStatus').textContent = 'Bitte zuerst einen Key eintragen.'; return; } $('apiKeyInput').dispatchEvent(new Event('change')); };
 
 async function testKey() {
   $('keyStatus').textContent = '⏳ Prüfe Verbindung …';
-  const g = prov() === 'gemini';
+  const pv = prov();
   try {
-    const r = await listModels();
-    if (g) { data.settings.gemModelList = r.models; data.settings.gemOrder = r.order.slice(0, 4); }
-    else { data.settings.claudeModelList = r.models; data.settings.autoModel = r.order[0]; }
+    const r = await listModels(pv);
+    data.settings[AI[pv].list] = r.models;
+    if (pv === 'claude') data.settings.autoModel = r.order[0];
+    else data.settings[pv + 'Order'] = r.order.slice(0, 4);
     save(); renderAiSettings();
     $('keyStatus').textContent = `✅ Verbunden – automatisch genutzt: ${r.order[0] || '–'}`;
   } catch (e) {
-    $('keyStatus').textContent = '❌ ' + e.message;
+    $('keyStatus').textContent = '❌ ' + (e.message === 'Failed to fetch' ? 'Keine Verbindung zum Anbieter (Internet oder Browser-Sperre).' : e.message);
   }
 }
 
@@ -1777,7 +1904,7 @@ async function testKey() {
 $('btnExport').onclick = () => {
   data.lastBackup = todayKey(); save();
   const copy = JSON.parse(JSON.stringify(data));
-  copy.settings.apiKey = ''; copy.settings.gemKey = ''; // Keys nicht mit in die Datei
+  AI_ORDER.forEach(pv => { copy.settings[AI[pv].key] = ''; }); // Keys nicht mit in die Datei
   const blob = new Blob([JSON.stringify(copy, null, 1)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -1796,7 +1923,7 @@ $('importInput').onchange = async ev => {
     if (!d || typeof d.days !== 'object' || !Array.isArray(d.weights)) throw new Error();
     const nDays = Object.keys(d.days).length;
     confirmSheet('Sicherung wiederherstellen?', `Die Datei enthält ${nDays} Tage und ${d.weights.length} Gewichtseinträge. Deine aktuellen Daten auf diesem Gerät werden dadurch ersetzt (die API-Keys bleiben).`, 'Wiederherstellen', () => {
-      const keys = { apiKey: data.settings.apiKey, gemKey: data.settings.gemKey };
+      const keys = {}; AI_ORDER.forEach(pv => { keys[AI[pv].key] = data.settings[AI[pv].key]; });
       const base = defaultData();
       data = Object.assign(base, d, { profile: Object.assign(base.profile, d.profile), settings: Object.assign(base.settings, d.settings, keys) });
       save(); renderAll(); toast('✅ Daten wiederhergestellt');
