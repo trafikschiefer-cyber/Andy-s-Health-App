@@ -259,6 +259,8 @@
     .item-vals { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
     .item-vals label { display: flex; flex-direction: column; gap: 2px; font-size: 10px; color: var(--text-muted); text-align: center; font-weight: 600; }
     .item-vals input { padding: 6px 2px; text-align: center; background: var(--card-bg); }
+    .item-row.warn { border-color: var(--danger); }
+    .it-warn { font-size: 12px; color: var(--danger); margin-top: 6px; font-weight: 600; }
     .item-vals label.g input { font-weight: 700; color: var(--primary); }
     .totals { display: flex; justify-content: space-between; gap: 6px; flex-wrap: wrap; background: var(--primary-soft); border-radius: 12px; padding: 10px 12px; font-size: 13px; margin-top: 4px; }
     .totals b { font-variant-numeric: tabular-nums; }
@@ -1070,6 +1072,11 @@ function foodSheet(opts) {
       const t = sumItems(items);
       q('#fTotals').innerHTML = `<span>Summe</span><b>${fmt(t.kcal)} kcal</b><span>P <b>${fmt(t.protein)}</b> g</span><span>KH <b>${fmt(t.carbs)}</b> g</span><span>F <b>${fmt(t.fat)}</b> g</span>`;
     };
+    const checkRow = (row, it) => {
+      const bad = it.grams > 0 && it.kcal / it.grams > 9.5;   // reines Fett hat ca. 9 kcal/g
+      row.classList.toggle('warn', bad);
+      row.querySelector('.it-warn').hidden = !bad;
+    };
     const renderItems = () => {
       q('#fItems').innerHTML = items.length ? items.map((it, i) => `<div class="item-row" data-i="${i}">
           <div class="item-top"><input class="it-name" value="${esc(it.name)}" aria-label="Lebensmittel"><button class="icon-btn it-del" aria-label="Entfernen">✕</button></div>
@@ -1079,23 +1086,32 @@ function foodSheet(opts) {
             <label>Protein<input class="it-v" data-k="protein" type="number" inputmode="numeric" value="${it.protein}"></label>
             <label>KH<input class="it-v" data-k="carbs" type="number" inputmode="numeric" value="${it.carbs}"></label>
             <label>Fett<input class="it-v" data-k="fat" type="number" inputmode="numeric" value="${it.fat}"></label>
-          </div></div>`).join('') : '<p class="empty" style="text-align:left;">Noch keine Lebensmittel – unten hinzufügen.</p>';
+          </div><div class="it-warn" hidden>⚠️ So viele kcal für diese Menge sind unmöglich – bitte Werte prüfen.</div></div>`).join('') : '<p class="empty" style="text-align:left;">Noch keine Lebensmittel – unten hinzufügen.</p>';
       q('#fItems').querySelectorAll('.item-row').forEach(row => {
         const it = items[+row.dataset.i];
         row.querySelector('.it-name').oninput = ev => { it.name = ev.target.value; };
+        checkRow(row, it);
         row.querySelector('.it-del').onclick = () => { items.splice(+row.dataset.i, 1); renderItems(); };
         row.querySelectorAll('.it-v').forEach(inp => inp.oninput = () => {
           const k = inp.dataset.k, v = Math.round(num(inp.value));
           if (k === 'grams') {
             it.grams = v;
-            if (it.base.grams > 0 && v > 0) {
-              // Werte proportional zur neuen Menge umrechnen
-              NUTR.forEach(n => { it[n] = Math.round(it.base[n] * v / it.base.grams); row.querySelector(`[data-k="${n}"]`).value = it[n]; });
-            } else { it.base.grams = v; }
+            if (v > 0) {
+              if (it.base.grams > 0) {
+                // Werte proportional zur Ausgangsmenge umrechnen
+                NUTR.forEach(n => { it[n] = Math.round(it.base[n] * v / it.base.grams); row.querySelector(`[data-k="${n}"]`).value = it[n]; });
+              } else {
+                // bisher keine Menge bekannt → aktuelle Werte gelten für diese Menge
+                it.base.grams = v;
+              }
+            }
+            // v = 0 (Feld beim Tippen kurz leer): nichts umrechnen, Ausgangsmenge bleibt erhalten
           } else {
             it[k] = v;
-            it.base = { grams: it.grams }; NUTR.forEach(n => it.base[n] = it[n]);
+            it.base[k] = v;
+            if (it.grams > 0) it.base.grams = it.grams;
           }
+          checkRow(row, it);
           renderTotals();
         });
       });
