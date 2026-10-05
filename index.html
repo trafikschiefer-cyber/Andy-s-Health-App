@@ -434,7 +434,13 @@
         </div>
         <div class="form-group" id="sportNameBox" hidden>
           <label for="sportName">Bezeichnung</label>
-          <input id="sportName" placeholder="z. B. Tanzen, Umzug, Hausarbeit">
+          <input id="sportName" placeholder="z. B. Umzug, Klettern">
+          <label for="sportIntensity" style="margin-top:6px;">Anstrengung (für die Kalorien-Schätzung)</label>
+          <select id="sportIntensity">
+            <option value="3">Leicht – kaum außer Atem</option>
+            <option value="4.5" selected>Mittel – leicht außer Atem</option>
+            <option value="7">Anstrengend – deutlich außer Atem</option>
+          </select>
         </div>
         <div class="grid-3">
           <div class="field"><label for="sportMin">Zeit (Min)</label><input id="sportMin" type="number" inputmode="numeric" placeholder="–"></div>
@@ -634,7 +640,20 @@ const SPORTS = [
   { id: 'kraft',      name: 'Krafttraining',    icon: '🏋️‍♂️', met: 5.0 },
   { id: 'badminton',  name: 'Badminton',        icon: '🏸', met: 5.5 },
   { id: 'yoga',       name: 'Yoga',             icon: '🧘‍♂️', met: 3.0 },
+  { id: 'pilates',    name: 'Pilates',          icon: '🧘‍♀️', met: 3.0 },
+  { id: 'dehnen',     name: 'Dehnen / Stretching', icon: '🙆‍♂️', met: 2.5 },
+  { id: 'nordic',     name: 'Nordic Walking',   icon: '🚶‍♂️', met: 4.8, speed: 5.5 },
+  { id: 'crosstrainer', name: 'Crosstrainer',   icon: '🏃‍♂️', met: 5.0 },
+  { id: 'rudern',     name: 'Rudergerät',       icon: '🚣‍♂️', met: 7.0 },
+  { id: 'treppen',    name: 'Treppensteigen',   icon: '🪜', met: 8.0 },
+  { id: 'tennis',     name: 'Tennis',           icon: '🎾', met: 7.3 },
+  { id: 'tischtennis', name: 'Tischtennis',     icon: '🏓', met: 4.0 },
+  { id: 'fussball',   name: 'Fußball',          icon: '⚽', met: 7.0 },
+  { id: 'golf',       name: 'Golf',             icon: '⛳', met: 4.3 },
+  { id: 'tanzen',     name: 'Tanzen',           icon: '💃', met: 5.0 },
+  { id: 'aerobic',    name: 'Zumba / Aerobic',  icon: '🤸‍♀️', met: 6.5 },
   { id: 'garten',     name: 'Gartenarbeit',     icon: '🌱', met: 3.8 },
+  { id: 'haushalt',   name: 'Hausarbeit / Putzen', icon: '🧹', met: 3.3 },
   { id: 'eigene',     name: 'Andere Aktivität …', icon: '🏅', met: null }
 ];
 
@@ -807,6 +826,23 @@ function calcTargets(k) {
 }
 
 const sportKcal = (met, min, w) => Math.round(met * 3.5 * (w || 75) / 200 * min);
+function guessMet(name) {
+  const n = String(name || '').toLowerCase();
+  const hit = SPORTS.find(x => x.met && (n.includes(x.name.toLowerCase().split(/[ /(]/)[0]) || x.name.toLowerCase().includes(n)));
+  return hit ? hit.met : 4.5;
+}
+// Sport-Einträge mit Dauer, aber 0 kcal (z. B. „Andere Aktivität“ ohne Kalorien) nachträglich schätzen
+function fixZeroSportEntries() {
+  let changed = false;
+  Object.keys(data.days).forEach(k => (data.days[k].entries || []).forEach(e => {
+    if (e.type === 'sport' && !num(e.kcal) && num(e.min) > 0) {
+      e.met = e.met || guessMet(e.name);
+      e.kcal = sportKcal(e.met, num(e.min), weightOn(k));
+      changed = true;
+    }
+  }));
+  if (changed) save();
+}
 
 function exerciseSummary(k) {
   const day = getDay(k);
@@ -1020,6 +1056,7 @@ function editEntry(id) {
       e.min = num(s.querySelector('#eMin').value);
       e.km = num(s.querySelector('#eKm').value);
       e.kcal = num(s.querySelector('#eKcal').value);
+      if (!e.kcal && e.min) e.kcal = sportKcal(e.met || guessMet(e.name), e.min, weightOn(viewDate));
       e.time = s.querySelector('#eTime').value;
       save(); closeSheet(); renderHeute();
     };
@@ -1216,11 +1253,10 @@ function updateSportForm() {
   const min = num($('sportMin').value), km = num($('sportKm').value), kcal = num($('sportKcal').value);
   const hint = $('sportEstimate');
   if (!min && !km && !kcal) {
-    hint.textContent = custom ? 'Zeit und/oder Kalorien eintragen.' : (sp.speed ? 'Zeit, Strecke oder Kalorien – eins davon reicht, den Rest schätzt die App.' : 'Zeit oder Kalorien eintragen – eins reicht.');
+    hint.textContent = custom ? 'Zeit oder Kalorien eintragen – ohne Kalorien schätzt die App nach der Anstrengung.' : (sp.speed ? 'Zeit, Strecke oder Kalorien – eins davon reicht, den Rest schätzt die App.' : 'Zeit oder Kalorien eintragen – eins reicht.');
     return;
   }
-  if (custom) { hint.textContent = kcal ? '' : 'Bei eigenen Aktivitäten bitte die Kalorien selbst eintragen (z. B. von der Uhr).'; return; }
-  const r = resolveSport(sp, min, km, kcal, w);
+  const r = resolveSport(custom ? { met: num($('sportIntensity').value) } : sp, min, km, kcal, w);
   const parts = [];
   if (r.min) parts.push(`${r.est.includes('min') ? '≈ ' : ''}${fmt(r.min)} Min`);
   if (r.km) parts.push(`${r.km.toLocaleString('de-AT')} km`);
@@ -1229,6 +1265,7 @@ function updateSportForm() {
   hint.textContent = '→ ' + parts.join(' · ') + (r.est.length ? `  (geschätzt mit ${w ? fmtKg(w) + ' kg' : '75 kg – Gewicht im Profil eintragen'})` : '');
 }
 ['sportMin', 'sportKm', 'sportKcal'].forEach(id => $(id).addEventListener('input', updateSportForm));
+$('sportIntensity').onchange = updateSportForm;
 $('sportType').onchange = () => { try { localStorage.setItem('ah2_lastSport', $('sportType').value); } catch (e) {} updateSportForm(); };
 
 $('btnSportSave').onclick = () => {
@@ -1238,8 +1275,9 @@ $('btnSportSave').onclick = () => {
   if (!name) { toast('Bitte die Aktivität benennen.'); return; }
   const min = num($('sportMin').value), km = num($('sportKm').value), kcal = num($('sportKcal').value);
   if (!min && !km && !kcal) { toast('Bitte Zeit, Strecke oder Kalorien eintragen.'); return; }
-  const r = custom ? { min, km, kcal } : resolveSport(sp, min, km, kcal, weightOn(viewDate));
-  addEntry({ type: 'sport', name, icon: sp.icon, met: sp.met, speed: sp.speed || null, min: r.min || 0, km: r.km || 0, kcal: r.kcal || 0 });
+  const met = custom ? num($('sportIntensity').value) : sp.met;
+  const r = resolveSport(custom ? { met } : sp, min, km, kcal, weightOn(viewDate));
+  addEntry({ type: 'sport', name, icon: sp.icon, met, speed: sp.speed || null, min: r.min || 0, km: r.km || 0, kcal: r.kcal || 0 });
   ['sportMin', 'sportKm', 'sportKcal', 'sportName'].forEach(id => $(id).value = '');
   updateSportForm();
 };
@@ -1974,6 +2012,7 @@ function renderAll() {
   else if (currentTab === 'profil') renderProfil();
 }
 
+fixZeroSportEntries();
 applyTheme();
 save();
 renderAll();
