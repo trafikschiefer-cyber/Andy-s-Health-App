@@ -1302,7 +1302,8 @@ const AI = {
 };
 const AI_ORDER = ['gemini', 'groq', 'openrouter', 'claude'];
 const prov = () => AI[data.settings.provider] ? data.settings.provider : 'gemini';
-const keyOf = pv => (data.settings[AI[pv].key] || '').trim();
+const cleanKey = v => String(v || '').replace(/[^\x21-\x7E]/g, '');   // entfernt Leer- und unsichtbare Zeichen (z. B. vom Kopieren)
+const keyOf = pv => cleanKey(data.settings[AI[pv].key]);
 const aiName = () => AI[prov()].name;
 const aiKey = () => keyOf(prov());
 // Reihenfolge der Versuche: gewählter Anbieter zuerst, dann (falls erlaubt) alle anderen mit Key
@@ -1318,7 +1319,7 @@ function httpError(msg, status) { const e = new Error(msg); e.status = status; r
 
 /* ----- Claude ----- */
 async function claudeFetch(path, opts) {
-  const key = data.settings.apiKey;
+  const key = keyOf('claude');
   if (!key) throw new Error('Bitte zuerst im Profil deinen Claude-API-Key eintragen.');
   const res = await fetch('https://api.anthropic.com' + path, Object.assign({}, opts, {
     headers: {
@@ -1368,7 +1369,7 @@ async function claudeRaw(text, image) {
 
 /* ----- Gemini ----- */
 async function gemFetch(path, body) {
-  const key = data.settings.gemKey;
+  const key = keyOf('gemini');
   if (!key) throw new Error('Bitte zuerst im Profil deinen Gemini-API-Key eintragen.');
   const url = `https://generativelanguage.googleapis.com/v1beta/${path}${path.includes('?') ? '&' : '?'}key=${encodeURIComponent(key)}`;
   const res = await fetch(url, body ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) } : {});
@@ -1530,7 +1531,12 @@ async function aiNutrition(prompt, image) {
       if (text.match(/\{[\s\S]*\}/)) break;
     } catch (e) { firstErr = firstErr || e; }
   }
-  if (!text) throw firstErr || new Error('Kein KI-Anbieter eingerichtet.');
+  if (!text) {
+    const e = firstErr || new Error('Kein KI-Anbieter eingerichtet.');
+    if (/ISO-8859-1|headers/i.test(e.message)) throw new Error('Der API-Key enthält ungültige Zeichen – bitte im Profil löschen und neu einfügen.');
+    if (/Failed to fetch|NetworkError|Load failed/i.test(e.message)) throw new Error('Keine Verbindung zum KI-Anbieter – Internet prüfen oder später nochmal versuchen.');
+    throw e;
+  }
   const m = text.match(/\{[\s\S]*\}/);
   if (!m) throw new Error('Antwort der KI nicht lesbar – bitte manuell eintragen.');
   const j = JSON.parse(m[0]);
@@ -1912,9 +1918,11 @@ document.querySelectorAll('[data-prov]').forEach(b => b.onclick = () => {
 });
 $('aiFallback').onchange = () => { data.settings.aiFallback = $('aiFallback').checked; save(); renderAiSettings(); };
 $('apiKeyInput').addEventListener('change', () => {
-  const v = $('apiKeyInput').value.trim();
+  const raw = $('apiKeyInput').value;
+  const v = cleanKey(raw);
   const pv = prov();
   data.settings[AI[pv].key] = v;
+  if (v !== raw.trim()) { $('apiKeyInput').value = v; toast('Unsichtbare Zeichen aus dem Key entfernt'); }
   data.settings[pv + 'Order'] = null;
   if (pv === 'claude') data.settings.autoModel = null;
   save(); renderAiSettings();
@@ -2013,6 +2021,7 @@ function renderAll() {
 }
 
 fixZeroSportEntries();
+AI_ORDER.forEach(pv => { const k = AI[pv].key; if (data.settings[k] && data.settings[k] !== cleanKey(data.settings[k])) { data.settings[k] = cleanKey(data.settings[k]); save(); } });
 applyTheme();
 save();
 renderAll();
