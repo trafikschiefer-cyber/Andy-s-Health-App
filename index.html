@@ -507,6 +507,10 @@
         <div class="chart" id="weightChart"></div>
       </div>
       <div class="card">
+        <h2>📏 Bauchumfang</h2>
+        <div class="chart" id="waistChart"></div>
+      </div>
+      <div class="card">
         <h2>🧮 Ø letzte 7 Tage</h2>
         <div id="weekStats"></div>
       </div>
@@ -554,6 +558,23 @@
           <div class="metric-card"><div class="title">Noch bis Ziel</div><div class="value num" id="wToGo">–</div></div>
         </div>
         <div id="weightHistoryList" style="margin-top:10px;"></div>
+      </div>
+
+      <div class="card">
+        <h2>📏 Bauchumfang</h2>
+        <div class="form-row">
+          <input type="number" inputmode="decimal" id="waistInput" step="0.5" placeholder="z. B. 102">
+          <button class="btn-main" style="flex:none;width:auto;padding:0 16px;" id="btnAddWaist">Speichern</button>
+        </div>
+        <div class="dashboard-grid" style="margin-top:12px;">
+          <div class="metric-card"><div class="title">Aktuell</div><div class="value num" id="wsCurrent">–</div></div>
+          <div class="metric-card"><div class="title">Seit Start</div><div class="value num" id="wsDelta">–</div></div>
+          <div class="metric-card"><div class="title">Bauch ÷ Größe</div><div class="value num" id="wsRatio">–</div></div>
+          <div class="metric-card"><div class="title">Noch bis Ziel</div><div class="value num" id="wsToGo">–</div></div>
+        </div>
+        <div class="form-group" style="margin-top:12px;"><label for="pGoalWaist">Ziel-Bauchumfang (cm, optional)</label><input type="number" inputmode="decimal" step="0.5" id="pGoalWaist"></div>
+        <div id="waistHistoryList"></div>
+        <p class="hint">So misst du vergleichbar: morgens vor dem Frühstück, stehend, Maßband auf Nabelhöhe, normal ausatmen und nicht einziehen. „Bauch ÷ Größe“ unter 0,5 gilt als günstig.</p>
       </div>
 
       <div class="card">
@@ -725,6 +746,7 @@ function defaultData() {
     settings: { provider: '', apiKey: '', model: '', gemKey: '', gemModel: '', theme: 'hell', themeAuto: false },
     days: {},
     weights: [],
+    waists: [],
     favorites: [],
     lastBackup: null
   };
@@ -1734,34 +1756,36 @@ function barChart(el, items, opts) {
   });
 }
 
-function weightChart(el) {
-  const pts = data.weights.slice(-60);
+// Linien-Diagramm für Messwerte über die Zeit (Gewicht, Bauchumfang)
+function lineChart(el, all, o) {
+  const pts = all.slice(-60);
   if (pts.length < 2) {
-    el.innerHTML = `<p class="empty">${pts.length ? 'Ab zwei Einträgen siehst du hier deine Kurve.' : 'Trag im Profil dein Gewicht ein, um den Verlauf zu sehen.'}</p>`;
+    el.innerHTML = `<p class="empty">${pts.length ? 'Ab zwei Einträgen siehst du hier deine Kurve.' : o.empty}</p>`;
     return;
   }
   const W = 320, H = 160, L = 34, R = 10, T = 12, B = 22;
   const iw = W - L - R, ih = H - T - B;
-  const goal = data.profile.goalWeight;
-  const vals = pts.map(p => p.kg).concat(goal ? [goal] : []);
+  const v = p => p[o.key];
+  const goal = o.goal;
+  const vals = pts.map(v).concat(goal ? [goal] : []);
   let lo = Math.floor(Math.min(...vals) - 0.5), hi = Math.ceil(Math.max(...vals) + 0.5);
   const t0 = parseKey(pts[0].date).getTime(), t1 = parseKey(pts[pts.length - 1].date).getTime();
   const x = d => L + (t1 === t0 ? iw / 2 : (parseKey(d).getTime() - t0) / (t1 - t0) * iw);
-  const y = v => T + ih - (v - lo) / (hi - lo) * ih;
-  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gewichtsverlauf">`;
-  [lo, (lo + hi) / 2, hi].forEach(v => { svg += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L - 6}" y="${y(v) + 3}" text-anchor="end">${fmtKg(v)}</text>`; });
-  if (goal) svg += `<line class="target" x1="${L}" x2="${W - R}" y1="${y(goal)}" y2="${y(goal)}"/><text x="${W - R}" y="${y(goal) - 4}" text-anchor="end">Ziel ${fmtKg(goal)}</text>`;
-  svg += `<polyline fill="none" stroke="var(--primary)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="${pts.map(p => `${x(p.date)},${y(p.kg)}`).join(' ')}"/>`;
+  const y = val => T + ih - (val - lo) / (hi - lo) * ih;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.label)}">`;
+  [lo, (lo + hi) / 2, hi].forEach(g => { svg += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(g)}" y2="${y(g)}"/><text x="${L - 6}" y="${y(g) + 3}" text-anchor="end">${o.fmt(g)}</text>`; });
+  if (goal) svg += `<line class="target" x1="${L}" x2="${W - R}" y1="${y(goal)}" y2="${y(goal)}"/><text x="${W - R}" y="${y(goal) - 4}" text-anchor="end">Ziel ${o.fmt(goal)}</text>`;
+  svg += `<polyline fill="none" stroke="${o.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="${pts.map(p => `${x(p.date)},${y(v(p))}`).join(' ')}"/>`;
   pts.forEach((p, i) => {
     const last = i === pts.length - 1;
-    if (last || pts.length <= 20) svg += `<circle cx="${x(p.date)}" cy="${y(p.kg)}" r="${last ? 4.5 : 3}" fill="var(--primary)" stroke="var(--card-bg)" stroke-width="2"/>`;
+    if (last || pts.length <= 20) svg += `<circle cx="${x(p.date)}" cy="${y(v(p))}" r="${last ? 4.5 : 3}" fill="${o.color}" stroke="var(--card-bg)" stroke-width="2"/>`;
   });
   svg += `<text x="${L}" y="${H - 6}">${dayLabel(pts[0].date)}</text><text x="${W - R}" y="${H - 6}" text-anchor="end">${dayLabel(pts[pts.length - 1].date)}</text>`;
-  svg += `<line id="wCross" class="grid" x1="0" x2="0" y1="${T}" y2="${T + ih}" style="display:none"/>`;
+  svg += `<line class="grid cross" x1="0" x2="0" y1="${T}" y2="${T + ih}" style="display:none"/>`;
   svg += `<rect class="hit" x="${L}" y="${T}" width="${iw}" height="${ih}"/></svg>`;
   const last = pts[pts.length - 1];
-  el.innerHTML = svg + `<div class="cap">Zuletzt ${dayLabel(last.date, true)}: <b>${fmtKg(last.kg)} kg</b></div>`;
-  const svgEl = el.querySelector('svg'), cap = el.querySelector('.cap'), cross = el.querySelector('#wCross');
+  el.innerHTML = svg + `<div class="cap">Zuletzt ${dayLabel(last.date, true)}: <b>${o.fmt(v(last))} ${o.unit}</b></div>`;
+  const svgEl = el.querySelector('svg'), cap = el.querySelector('.cap'), cross = el.querySelector('.cross');
   const hit = el.querySelector('.hit');
   const show = ev => {
     const r = svgEl.getBoundingClientRect();
@@ -1769,10 +1793,18 @@ function weightChart(el) {
     let best = pts[0];
     pts.forEach(p => { if (Math.abs(x(p.date) - cx) < Math.abs(x(best.date) - cx)) best = p; });
     cross.setAttribute('x1', x(best.date)); cross.setAttribute('x2', x(best.date)); cross.style.display = '';
-    cap.innerHTML = `${dayLabel(best.date, true)}: <b>${fmtKg(best.kg)} kg</b>`;
+    const diff = v(best) - v(pts[0]);
+    cap.innerHTML = `${dayLabel(best.date, true)}: <b>${o.fmt(v(best))} ${o.unit}</b>${best !== pts[0] ? ` · ${diff > 0 ? '+' : ''}${o.fmt(diff)} seit ${dayLabel(pts[0].date)}` : ''}`;
   };
   hit.addEventListener('mousemove', show); hit.addEventListener('click', show);
   hit.addEventListener('touchstart', show, { passive: true }); hit.addEventListener('touchmove', show, { passive: true });
+}
+const fmtCm = n => (Math.round(n * 10) / 10).toLocaleString('de-AT', { maximumFractionDigits: 1 });
+function weightChart(el) {
+  lineChart(el, data.weights, { key: 'kg', unit: 'kg', fmt: fmtKg, goal: data.profile.goalWeight, color: 'var(--primary)', label: 'Gewichtsverlauf', empty: 'Trag im Profil dein Gewicht ein, um den Verlauf zu sehen.' });
+}
+function waistChart(el) {
+  lineChart(el, data.waists || [], { key: 'cm', unit: 'cm', fmt: fmtCm, goal: data.profile.goalWaist, color: 'var(--water)', label: 'Bauchumfang', empty: 'Trag im Profil deinen Bauchumfang ein, um den Verlauf zu sehen.' });
 }
 
 function renderVerlauf() {
@@ -1795,6 +1827,7 @@ function renderVerlauf() {
   }[chartMode];
   barChart($('weekChart'), items, cfg);
   weightChart($('weightChart'));
+  waistChart($('waistChart'));
 
   // Durchschnitt nur über Tage mit Einträgen
   const logged = sums.filter(s => s.food > 0);
@@ -1850,6 +1883,23 @@ function renderProfil() {
     toast('Gewicht gelöscht', () => { data.weights.splice(idx, 0, removed); save(); renderProfil(); });
   });
 
+  const ws = data.waists || [];
+  const wc = ws.length ? ws[ws.length - 1].cm : null;
+  $('wsCurrent').innerHTML = wc ? `${fmtCm(wc)} <small>cm</small>` : '–';
+  $('wsDelta').innerHTML = ws.length > 1 ? `${wc - ws[0].cm > 0 ? '+' : ''}${fmtCm(wc - ws[0].cm)} <small>cm</small>` : '–';
+  if (wc && p.height) {
+    const r = wc / p.height;
+    $('wsRatio').innerHTML = `${r.toFixed(2).replace('.', ',')} <small>${r < 0.5 ? '✓ gut' : r < 0.6 ? 'erhöht' : 'hoch'}</small>`;
+  } else $('wsRatio').textContent = '–';
+  $('wsToGo').innerHTML = wc && p.goalWaist ? (wc > p.goalWaist ? `${fmtCm(wc - p.goalWaist)} <small>cm</small>` : '🎉 erreicht') : '–';
+  if (document.activeElement !== $('pGoalWaist')) $('pGoalWaist').value = p.goalWaist || '';
+  $('waistHistoryList').innerHTML = ws.slice().reverse().slice(0, 6).map(h => `<div class="weight-item"><span>${dayLabel(h.date, true)}</span><span><b class="num">${fmtCm(h.cm)} cm</b> <button data-wsdel="${h.date}" aria-label="Löschen">×</button></span></div>`).join('');
+  $('waistHistoryList').querySelectorAll('[data-wsdel]').forEach(b => b.onclick = () => {
+    const idx = data.waists.findIndex(x => x.date === b.dataset.wsdel);
+    const [removed] = data.waists.splice(idx, 1); save(); renderProfil();
+    toast('Bauchumfang gelöscht', () => { data.waists.splice(idx, 0, removed); save(); renderProfil(); });
+  });
+
   const tg = calcTargets();
   $('targetBreakdown').innerHTML = `
     ${tg.bmr ? `<div class="stat-line"><span>Grundumsatz</span><b>${fmt(tg.bmr)} kcal</b></div>
@@ -1885,6 +1935,19 @@ $('btnAddWeight').onclick = () => {
   $('weightInput').value = '';
   save(); renderAll();
   toast(`⚖️ ${fmtKg(kg)} kg gespeichert`);
+};
+
+bindProfile('pGoalWaist', 'goalWaist', el => num(el.value) || null);
+$('btnAddWaist').onclick = () => {
+  const cm = num($('waistInput').value);
+  if (!cm || cm < 40 || cm > 250) { toast('Bitte einen gültigen Bauchumfang in cm eingeben.'); return; }
+  const k = todayKey();
+  data.waists = (data.waists || []).filter(w => w.date !== k);
+  data.waists.push({ date: k, cm });
+  data.waists.sort((a, b) => a.date.localeCompare(b.date));
+  $('waistInput').value = '';
+  save(); renderAll();
+  toast(`📏 ${fmtCm(cm)} cm gespeichert`);
 };
 
 const modelKey = () => AI[prov()].model;
