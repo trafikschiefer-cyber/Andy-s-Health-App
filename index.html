@@ -290,37 +290,16 @@
     }
     .toast .undo { margin-left: 10px; color: var(--primary-soft); background: none; border: none; font-weight: 700; cursor: pointer; font-size: 14px; }
 
-    /* ---------- Übungen ---------- */
-    .subtabs { display: flex; gap: 6px; overflow-x: auto; }
-    .subtabs button {
-      flex: 1; padding: 9px 10px; border-radius: 999px; border: 1px solid var(--border);
-      background: var(--card-bg); color: var(--text-muted); font-weight: 600; font-size: 13px; cursor: pointer; white-space: nowrap;
-    }
-    .subtabs button.active[data-sub="morgen"] { background: var(--morning); color: var(--on-accent); border-color: transparent; }
-    .subtabs button.active[data-sub="abend"] { background: var(--evening); color: var(--on-accent); border-color: transparent; }
-    .subtabs button.active[data-sub="kraeftigung"] { background: var(--strength); color: var(--on-accent); border-color: transparent; }
-    .ex-intro { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted); }
-    .ex-intro b { color: var(--text); }
-    .phase-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--strength); margin: 6px 0 -4px; }
-    .ex-card { display: flex; gap: 12px; }
-    .ex-card.done { opacity: 0.55; }
-    .ex-badge { flex: none; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: var(--on-accent); }
-    .ex-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
-    .ex-head { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
-    .ex-head h3 { margin: 0; font-size: 15px; color: var(--text); }
-    .chip { font-size: 11px; font-weight: 600; color: var(--text-muted); background: var(--inset); border: 1px solid var(--border); border-radius: 999px; padding: 3px 8px; white-space: nowrap; }
-    .steps { margin: 0; padding-left: 18px; color: var(--text-muted); font-size: 13px; line-height: 1.5; }
-    .ex-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .check { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; cursor: pointer; user-select: none; }
-    .check input { width: 20px; height: 20px; padding: 0; }
-    .timer-btn { border: none; border-radius: 10px; padding: 8px 12px; font-weight: 700; font-size: 13px; cursor: pointer; color: var(--on-accent); font-variant-numeric: tabular-nums; }
-    .counter { display: flex; align-items: center; gap: 8px; }
-    .counter button { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: var(--inset); color: var(--text); font-size: 16px; font-weight: 700; cursor: pointer; }
-    .counter .n { font-weight: 700; min-width: 2ch; text-align: center; }
-    .note-card ul { margin: 0; padding-left: 18px; font-size: 13px; color: var(--text-muted); line-height: 1.55; }
-    .note-card.warn { border-color: var(--danger); }
-    .note-card.warn { background: var(--danger-soft); }
-    .note-card.warn h2 { color: var(--danger); }
+    /* ---------- Hinweise / Banner ---------- */
+    .nudge { display: flex; gap: 10px; align-items: center; background: var(--primary-soft); border: 1px solid var(--border); border-radius: 14px; padding: 10px 12px; font-size: 13px; }
+    .nudge.warn { background: var(--danger-soft); }
+    .nudge .txt { flex: 1; }
+    .nudge button { flex: none; border: none; border-radius: 9px; padding: 7px 10px; font-weight: 700; font-size: 12px; cursor: pointer; background: var(--primary); color: var(--primary-ink); }
+    .nudge button.ghost { background: transparent; color: var(--text-muted); padding: 7px 4px; }
+    .report-tip { font-size: 13px; padding: 8px 10px; border-radius: 10px; background: var(--inset); border: 1px solid var(--border); margin-top: 6px; line-height: 1.45; }
+    .day-row.missing { color: var(--text-muted); font-style: italic; }
+    .scan-video { width: 100%; max-height: 260px; object-fit: cover; border-radius: 12px; background: #000; margin-bottom: 10px; }
+    .date-in { flex: 0 0 132px !important; font-size: 14px; padding: 8px; }
 
     /* ---------- Diagramme ---------- */
     .chart svg { width: 100%; height: auto; display: block; overflow: visible; }
@@ -377,6 +356,7 @@
 
     <!-- ================= TAB HEUTE ================= -->
     <section id="tab-heute" class="tab-content active">
+      <div id="nudges" style="display:flex;flex-direction:column;gap:8px;"></div>
 
       <div class="card">
         <h2>🔥 Kalorienbilanz <span class="right" id="balanceDay"></span></h2>
@@ -415,14 +395,19 @@
 
       <div class="card">
         <h2>🥗 Essen eintragen</h2>
-        <div class="grid-3">
+        <div class="grid-2">
           <button class="action-card" id="btnCamera"><span class="icon">📸</span><span class="l">Foto (KI)</span></button>
           <button class="action-card" id="btnGallery"><span class="icon">🖼️</span><span class="l">Galerie (KI)</span></button>
+          <button class="action-card" id="btnBarcode"><span class="icon">📦</span><span class="l">Barcode</span></button>
           <button class="action-card" id="btnManualFood"><span class="icon">✍️</span><span class="l">Manuell</span></button>
         </div>
         <div class="sub-box" id="favBox" hidden>
           <h3>⭐ Favoriten – antippen zum Eintragen</h3>
           <div class="pill-row" id="favList"></div>
+        </div>
+        <div class="sub-box" id="recentBox" hidden>
+          <h3>🕘 Zuletzt gegessen – antippen zum Eintragen</h3>
+          <div class="pill-row" id="recentList"></div>
         </div>
       </div>
 
@@ -457,42 +442,16 @@
       </div>
     </section>
 
-    <!-- ================= TAB ÜBUNGEN ================= -->
-    <section id="tab-uebungen" class="tab-content">
-      <div class="subtabs" id="exSubtabs">
-        <button data-sub="morgen" class="active">🌅 Morgen</button>
-        <button data-sub="abend">🌙 Abend</button>
-        <button data-sub="kraeftigung">💪 Kräftigung</button>
-      </div>
-      <div class="ex-intro"><span id="exIntroText"></span><b id="exCount" class="num"></b></div>
-      <div id="exList" style="display:flex;flex-direction:column;gap:10px;"></div>
-      <div class="card" style="padding:12px 16px;">
-        <div class="stat-line"><span>Übungsminuten an diesem Tag</span><b id="exMinutes">0 Min</b></div>
-        <div class="stat-line"><span>Zählt als Sport (geschätzt)</span><b id="exKcal">0 kcal</b></div>
-      </div>
-      <div class="card note-card">
-        <h2>🪑 Für den Trafik-Alltag</h2>
-        <ul>
-          <li>Alle 30–60 Minuten kurz aufstehen und 1–2 Minuten gehen.</li>
-          <li>Nicht auf Geldbörse oder anderen Gegenständen in der Gesäßtasche sitzen.</li>
-          <li>Beim Sitzen beide Füße voll auf den Boden stellen.</li>
-        </ul>
-      </div>
-      <div class="card note-card warn">
-        <h2>⚠️ Wann zum Arzt oder zur Physio</h2>
-        <ul>
-          <li>Die Schmerzen werden stärker.</li>
-          <li>Taubheit zieht bis in den Fuß.</li>
-          <li>Das Bein wird schwächer.</li>
-          <li>Keine Besserung nach 2–3 Wochen trotz Übungen.</li>
-          <li>Zusätzlich treten Rückenschmerzen auf.</li>
-        </ul>
-      </div>
-      <p class="hint">Die Übungen basieren auf allgemeinen Empfehlungen bei vermutetem Piriformis-Syndrom und ersetzen keine ärztliche oder physiotherapeutische Untersuchung.</p>
-    </section>
-
     <!-- ================= TAB VERLAUF ================= -->
     <section id="tab-verlauf" class="tab-content">
+      <div class="card">
+        <h2>📝 Wochenbericht <span class="right" id="reportRange"></span></h2>
+        <div class="seg" id="reportSeg">
+          <button data-week="-1" class="active">Letzte Woche</button>
+          <button data-week="0">Diese Woche</button>
+        </div>
+        <div id="weekReport"></div>
+      </div>
       <div class="card">
         <h2>📈 Wochenübersicht</h2>
         <div class="seg" id="chartSeg">
@@ -548,7 +507,8 @@
       <div class="card">
         <h2>⚖️ Gewicht</h2>
         <div class="form-row">
-          <input type="number" inputmode="decimal" id="weightInput" step="0.1" placeholder="z. B. 85,4">
+          <input type="number" inputmode="decimal" id="weightInput" step="0.1" placeholder="kg">
+          <input type="date" id="weightDate" class="date-in" aria-label="Datum der Messung">
           <button class="btn-main" style="flex:none;width:auto;padding:0 16px;" id="btnAddWeight">Speichern</button>
         </div>
         <div class="dashboard-grid" style="margin-top:12px;">
@@ -563,7 +523,8 @@
       <div class="card">
         <h2>📏 Bauchumfang</h2>
         <div class="form-row">
-          <input type="number" inputmode="decimal" id="waistInput" step="0.5" placeholder="z. B. 102">
+          <input type="number" inputmode="decimal" id="waistInput" step="0.5" placeholder="cm">
+          <input type="date" id="waistDate" class="date-in" aria-label="Datum der Messung">
           <button class="btn-main" style="flex:none;width:auto;padding:0 16px;" id="btnAddWaist">Speichern</button>
         </div>
         <div class="dashboard-grid" style="margin-top:12px;">
@@ -618,6 +579,7 @@
           <button class="btn-main secondary" id="btnImport">⬆️ Wiederherstellen</button>
         </div>
         <p class="hint" id="lastBackup"></p>
+        <p class="hint" id="persistStatus"></p>
         <div class="sub-box install-hint" id="installHint">
           <b>Als App am Homescreen:</b> iPhone: in Safari auf Teilen → „Zum Home-Bildschirm“. Android: Chrome-Menü → „App installieren“.
           Achtung iPhone: Die Homescreen-App hat einen eigenen Speicher – vorher hier sichern und in der App wiederherstellen.
@@ -629,7 +591,6 @@
 
   <nav class="bottom-nav">
     <button class="nav-btn active" data-tab="heute"><span class="nav-icon">📊</span><span>Heute</span></button>
-    <button class="nav-btn" data-tab="uebungen"><span class="nav-icon">🧘</span><span>Übungen</span></button>
     <button class="nav-btn" data-tab="verlauf"><span class="nav-icon">📈</span><span>Verlauf</span></button>
     <button class="nav-btn" data-tab="profil"><span class="nav-icon">👤</span><span>Profil</span></button>
   </nav>
@@ -677,43 +638,6 @@ const SPORTS = [
   { id: 'haushalt',   name: 'Hausarbeit / Putzen', icon: '🧹', met: 3.3 },
   { id: 'eigene',     name: 'Andere Aktivität …', icon: '🏅', met: null }
 ];
-
-const EXERCISES = {
-  morgen: [
-    { id:"m1", title:"Knie-zur-Schulter", steps:["Auf den Rücken legen.","Knie der betroffenen Seite zur Brust ziehen.","Mit der Hand sanft Richtung gegenüberliegende Schulter führen.","Lösen und die zweite Runde starten."], meta:"2 × 30 Sek", timer:30, minutes:1 },
-    { id:"m2", title:"Figure-4-Dehnung", steps:["Auf den Rücken legen.","Knöchel der betroffenen Seite auf das gegenüberliegende Knie legen.","Unteren Oberschenkel zur Brust ziehen.","45 Sek. halten, 15 Sek. lockern, wiederholen."], meta:"2 × 45 Sek", timer:45, minutes:1.5 },
-    { id:"m3", title:"Beckenkippen", steps:["Rückenlage, Knie aufgestellt.","Becken langsam nach hinten kippen, unteren Rücken sanft in den Boden drücken.","Kurz halten, dann lösen."], meta:"15–20 Wdh.", counter:true, minutes:1 },
-    { id:"m4", title:"Kurzes Gehen", steps:["Locker in der Wohnung oder im Freien gehen.","Große Schritte vermeiden.","Ziel: Hüfte und Gesäß sanft aktivieren."], meta:"1 Minute", timer:60, minutes:1 }
-  ],
-  abend: [
-    { id:"a1", title:"Wärme", steps:["Wärmekissen oder Wärmflasche aufs betroffene Gesäß legen.","Dabei entspannt sitzen oder liegen."], meta:"5–10 Min", optional:true, timer:300, minutes:0 },
-    { id:"a2", title:"Sitzende Piriformis-Dehnung", steps:["Aufrecht auf einen Stuhl setzen.","Knöchel der betroffenen Seite auf das gegenüberliegende Knie legen.","Rücken gerade halten, langsam nach vorne beugen.","Lösen und die zweite Runde starten."], meta:"2 × 45 Sek", timer:45, minutes:1.5 },
-    { id:"a3", title:"Piriformis-Massage mit Ball", steps:["Tennis- oder Faszienball zwischen Wand und Gesäß platzieren.","Langsam in kleinen Kreisen rollen.","Schmerzhafte Punkte 20–30 Sek. bearbeiten.","Schmerzintensität max. 5 von 10."], meta:"2 Minuten", timer:120, minutes:2 },
-    { id:"a4", title:"Entspannte Rückenlage", steps:["Rückenlage einnehmen.","Tief in den Bauch atmen.","Beim Ausatmen Gesäß und Hüfte bewusst entspannen."], meta:"1 Minute", timer:60, minutes:1 }
-  ],
-  kraeftigung: [
-    { id:"k1", title:"Marschieren auf der Stelle", phase:"warmup", steps:["Locker auf der Stelle marschieren.","Arme entspannt mitschwingen."], meta:"1 Minute", timer:60, minutes:1 },
-    { id:"k2", title:"Hüftkreisen", phase:"warmup", steps:["Hände in die Hüften stützen.","Kleine Kreise mit dem Becken machen."], meta:"30 Sek. pro Richtung", timer:30, minutes:1 },
-    { id:"k3", title:"Brücke (Glute Bridge)", phase:"staerkung", steps:["Rückenlage, Füße hüftbreit aufgestellt.","Gesäß anspannen, Becken anheben.","Kurz oben halten, dann langsam absenken.","20 Sek. Pause zwischen den Sätzen."], meta:"3 × 12 Wdh.", counter:true, minutes:2.5 },
-    { id:"k4", title:"Clamshell", phase:"staerkung", steps:["Seitenlage, Knie angewinkelt, Füße zusammen.","Oberes Knie langsam öffnen und wieder schließen.","Langsam ausführen."], meta:"2 × 15 Wdh. je Seite", counter:true, minutes:2 },
-    { id:"k5", title:"Seitliches Beinheben", phase:"staerkung", steps:["Seitenlage, oberes Bein gestreckt.","Langsam anheben und senken.","Fuß leicht nach unten zeigen lassen."], meta:"2 × 12 Wdh. je Seite", counter:true, minutes:2 },
-    { id:"k6", title:"Sit-to-Stand", phase:"staerkung", steps:["Von einem Stuhl aufstehen.","Langsam wieder hinsetzen.","Wenn möglich ohne Hände abstützen."], meta:"2 × 10 Wdh.", counter:true, minutes:1.5 },
-    { id:"k7", title:"Mini-Kniebeuge", phase:"staerkung", steps:["Hände an einer Tischkante abstützen.","Nur ca. 30–40° in die Knie gehen.","Nicht tief beugen."], meta:"2 × 12 Wdh.", counter:true, minutes:2 },
-    { id:"k8", title:"Einbeinstand", phase:"balance", steps:["An Wand oder Stuhl festhalten.","Auf einem Bein stehen.","Seite wechseln."], meta:"2 × 30 Sek. je Seite", timer:30, minutes:2 },
-    { id:"k9", title:"Hüftbeuger-Dehnung", phase:"mobilisation", steps:["In einen leichten Ausfallschritt gehen.","Becken sanft nach vorne schieben, bis sich die Vorderseite der Hüfte dehnt."], meta:"30 Sek. je Seite", timer:30, minutes:1 },
-    { id:"k10", title:"Schmetterlingsdehnung", phase:"mobilisation", steps:["Sitzen, Fußsohlen aneinanderlegen.","Knie locker nach unten sinken lassen."], meta:"1 Minute", timer:60, minutes:1 },
-    { id:"k11", title:"Lockeres Gehen", phase:"mobilisation", steps:["Locker im Raum oder im Freien gehen.","Zum Ausklang der Einheit."], meta:"1 Minute", timer:60, minutes:1 }
-  ]
-};
-const EX_META = {
-  morgen:      { intro: '5-Minuten-Routine für den Start in den Tag', color: 'var(--morning)' },
-  abend:       { intro: '5-Minuten-Routine zum Tagesausklang', color: 'var(--evening)' },
-  kraeftigung: { intro: '15 Minuten Kräftigung – 2–3× pro Woche', color: 'var(--strength)' }
-};
-const PHASE_LABELS = {
-  warmup: 'Aufwärmen · 2 Min', staerkung: 'Kräftigung · 10 Min',
-  balance: 'Balance & Stabilität · 2 Min', mobilisation: 'Mobilisation · 3 Min'
-};
 
 /* ---------- Hilfsfunktionen ---------- */
 const $ = id => document.getElementById(id);
@@ -847,7 +771,8 @@ function calcTargets(k) {
   return out;
 }
 
-const sportKcal = (met, min, w) => Math.round(met * 3.5 * (w || 75) / 200 * min);
+// Netto-Verbrauch: der Ruheumsatz (1 MET) steckt schon im Tagesverbrauch und wird abgezogen
+const sportKcal = (met, min, w) => Math.round(Math.max(met - 1, 0) * 3.5 * (w || 75) / 200 * min);
 function guessMet(name) {
   const n = String(name || '').toLowerCase();
   const hit = SPORTS.find(x => x.met && (n.includes(x.name.toLowerCase().split(/[ /(]/)[0]) || x.name.toLowerCase().includes(n)));
@@ -866,13 +791,6 @@ function fixZeroSportEntries() {
   if (changed) save();
 }
 
-function exerciseSummary(k) {
-  const day = getDay(k);
-  let min = 0;
-  ['morgen', 'abend', 'kraeftigung'].forEach(s => EXERCISES[s].forEach(e => { if (day.ex && day.ex.done[e.id]) min += e.minutes || 0; }));
-  return { min, kcal: Math.round(3.5 * (weightOn(k) || 75) * min / 60) };
-}
-
 function daySums(k) {
   const day = getDay(k);
   const s = { food: 0, p: 0, c: 0, f: 0, sport: 0, sportMin: 0, water: day.water || 0 };
@@ -880,9 +798,8 @@ function daySums(k) {
     if (e.type === 'food') { s.food += num(e.kcal); s.p += num(e.protein); s.c += num(e.carbs); s.f += num(e.fat); }
     else { s.sport += num(e.kcal); s.sportMin += num(e.min); }
   });
-  const ex = exerciseSummary(k);
-  s.exMin = ex.min; s.exKcal = ex.kcal;
-  s.burned = s.sport + ex.kcal;
+  s.exMin = 0; s.exKcal = 0;
+  s.burned = s.sport;
   return s;
 }
 
@@ -890,7 +807,6 @@ function daySums(k) {
 let viewDate = todayKey();
 let lastToday = todayKey();
 let currentTab = 'heute';
-let currentSub = 'morgen';
 let chartMode = 'kcal';
 
 /* ---------- Toast & Sheets ---------- */
@@ -909,7 +825,7 @@ function openSheet(html, onMount) {
   $('sheetBackdrop').classList.add('open');
   if (onMount) onMount($('sheet'));
 }
-function closeSheet() { $('sheetBackdrop').classList.remove('open'); $('sheet').innerHTML = ''; }
+function closeSheet() { if (typeof stopScan === 'function') stopScan(); $('sheetBackdrop').classList.remove('open'); $('sheet').innerHTML = ''; }
 $('sheetBackdrop').addEventListener('click', e => { if (e.target === $('sheetBackdrop')) closeSheet(); });
 
 function confirmSheet(title, text, okLabel, onOk, danger) {
@@ -929,7 +845,7 @@ function switchTab(tab) {
   currentTab = tab;
   document.querySelectorAll('.tab-content').forEach(el => el.classList.toggle('active', el.id === 'tab-' + tab));
   document.querySelectorAll('.nav-btn').forEach(el => el.classList.toggle('active', el.dataset.tab === tab));
-  $('dateNav').style.visibility = (tab === 'heute' || tab === 'uebungen') ? 'visible' : 'hidden';
+  $('dateNav').style.visibility = tab === 'heute' ? 'visible' : 'hidden';
   window.scrollTo(0, 0);
   renderAll();
 }
@@ -991,17 +907,63 @@ function renderHeute() {
   setBar('waterFill', s.water, tw);
 
   renderFavorites();
+  renderRecent();
+  renderNudges();
   renderLog();
+}
+
+// ISO-Woche: Montag als Wochenstart
+function weekStart(k) { const d = parseKey(k); const wd = (d.getDay() + 6) % 7; d.setDate(d.getDate() - wd); return dateKey(d); }
+function isoWeek(k) { const d = parseKey(k); d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7); const y = new Date(d.getFullYear(), 0, 4); return 1 + Math.round(((d - y) / 864e5 - 3 + (y.getDay() + 6) % 7) / 7); }
+const daysBetween = (a, b) => Math.round((parseKey(b) - parseKey(a)) / 864e5);
+const hasFood = k => (getDay(k).entries || []).some(e => e.type === 'food');
+
+function renderNudges() {
+  const t = todayKey(), st = data.settings, el = $('nudges');
+  const html = [];
+  if (viewDate === t) {
+    // Wochenbericht (Montag/Dienstag)
+    const ws = weekStart(t), lastWeek = addDays(ws, -7);
+    const dow = (parseKey(t).getDay() + 6) % 7;
+    if (dow <= 1 && st.reportSeen !== lastWeek && Object.keys(data.days).some(k => k >= lastWeek && k < ws)) {
+      html.push(`<div class="nudge"><span>📊</span><span class="txt">Dein Wochenbericht für KW ${isoWeek(lastWeek)} ist fertig.</span><button data-n="report">Ansehen</button><button class="ghost" data-n="report-x">✕</button></div>`);
+    }
+    // Sicherung
+    const nDays = Object.keys(data.days).length;
+    const sinceBackup = st.lastBackup ? daysBetween(st.lastBackup, t) : 999;
+    if (nDays >= 3 && sinceBackup >= 7 && (!st.backupSnooze || st.backupSnooze < t)) {
+      html.push(`<div class="nudge warn"><span>💾</span><span class="txt">${st.lastBackup ? `Letzte Sicherung vor ${sinceBackup} Tagen.` : 'Noch keine Sicherung deiner Daten.'} Kurz sichern?</span><button data-n="backup">Sichern</button><button class="ghost" data-n="backup-x">Später</button></div>`);
+    }
+    // Abend-Erinnerung
+    const foods = getDay(t).entries.filter(e => e.type === 'food').length;
+    if (new Date().getHours() >= 19 && foods < 2) {
+      html.push(`<div class="nudge"><span>🕗</span><span class="txt">Heute ${foods ? 'erst eine Mahlzeit' : 'noch nichts'} eingetragen – fehlt noch etwas?</span></div>`);
+    }
+    // gestern leer
+    const y = addDays(t, -1);
+    if (!hasFood(y) && Object.keys(data.days).some(k => k < y) && st.gapSeen !== y) {
+      html.push(`<div class="nudge"><span>📅</span><span class="txt">Für gestern ist nichts eingetragen.</span><button data-n="yesterday">Nachtragen</button><button class="ghost" data-n="gap-x">✕</button></div>`);
+    }
+  }
+  el.innerHTML = html.join('');
+  el.querySelectorAll('[data-n]').forEach(b => b.onclick = () => {
+    const a = b.dataset.n;
+    if (a === 'report') { st.reportSeen = addDays(weekStart(t), -7); save(); reportWeek = -1; switchTab('verlauf'); }
+    if (a === 'report-x') { st.reportSeen = addDays(weekStart(t), -7); save(); renderNudges(); }
+    if (a === 'backup') { $('btnExport').click(); renderNudges(); }
+    if (a === 'backup-x') { st.backupSnooze = addDays(t, 2); save(); renderNudges(); }
+    if (a === 'yesterday') { st.gapSeen = addDays(t, -1); save(); setViewDate(addDays(t, -1)); }
+    if (a === 'gap-x') { st.gapSeen = addDays(t, -1); save(); renderNudges(); }
+  });
 }
 
 function renderLog() {
   const k = viewDate;
   const day = getDay(k);
-  const ex = exerciseSummary(k);
   const items = day.entries.slice().sort((a, b) => (b.time || '').localeCompare(a.time || ''));
   const c = $('logList');
   $('logCount').textContent = items.length ? `${items.length} Einträge` : '';
-  if (!items.length && !ex.min) { c.innerHTML = '<p class="empty">Noch keine Einträge an diesem Tag.</p>'; return; }
+  if (!items.length) { c.innerHTML = '<p class="empty">Noch keine Einträge an diesem Tag.</p>'; return; }
   let html = '';
   items.forEach(e => {
     const isFood = e.type === 'food';
@@ -1018,13 +980,8 @@ function renderLog() {
       <button class="icon-btn" data-edit="${e.id}" aria-label="Bearbeiten">✏️</button>
     </div>`;
   });
-  if (ex.min) {
-    html += `<div class="log-item"><div class="ico">🧘</div><div class="body"><div class="t">Übungen</div><div class="m">${fmt(ex.min)} Min · aus dem Übungen-Tab</div></div>
-      <div class="kc num c-sport">−${fmt(ex.kcal)}</div><button class="icon-btn" data-goex aria-label="Zu den Übungen">›</button></div>`;
-  }
   c.innerHTML = html;
   c.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => editEntry(b.dataset.edit));
-  const g = c.querySelector('[data-goex]'); if (g) g.onclick = () => switchTab('uebungen');
 }
 
 /* ---------- Wasser ---------- */
@@ -1240,6 +1197,30 @@ $('btnManualFood').onclick = () => foodSheet();
 const isFavorite = name => data.favorites.some(f => f.name === name);
 function addFavorite(v) { removeFavorite(v.name, true); data.favorites.unshift(Object.assign({}, v)); data.favorites = data.favorites.slice(0, 12); save(); }
 function removeFavorite(name, silent) { data.favorites = data.favorites.filter(f => f.name !== name); if (!silent) save(); }
+function recentMeals() {
+  const favNames = new Set(data.favorites.map(f => f.name));
+  const seen = new Set(), out = [];
+  const keys = Object.keys(data.days).sort().reverse().slice(0, 21);
+  for (const k of keys) {
+    const ents = (data.days[k].entries || []).filter(e => e.type === 'food').slice().reverse();
+    for (const e of ents) {
+      if (!e.name || seen.has(e.name) || favNames.has(e.name)) continue;
+      if (k === viewDate) { seen.add(e.name); continue; }   // heute schon eingetragen → nicht anbieten
+      seen.add(e.name); out.push(e);
+      if (out.length >= 8) return out;
+    }
+  }
+  return out;
+}
+function renderRecent() {
+  const list = recentMeals();
+  $('recentBox').hidden = !list.length;
+  $('recentList').innerHTML = list.map((f, i) => `<button class="pill-btn" data-rec="${i}">${esc(f.name.length > 28 ? f.name.slice(0, 26) + '…' : f.name)} · ${fmt(f.kcal)}</button>`).join('');
+  $('recentList').querySelectorAll('[data-rec]').forEach(b => b.onclick = () => {
+    const f = list[+b.dataset.rec];
+    addEntry({ type: 'food', src: 'repeat', name: f.name, items: f.items ? f.items.map(i => Object.assign({}, i)) : undefined, kcal: f.kcal, protein: f.protein, carbs: f.carbs, fat: f.fat });
+  });
+}
 function renderFavorites() {
   $('favBox').hidden = !data.favorites.length;
   $('favList').innerHTML = data.favorites.map((f, i) => `<button class="pill-btn" data-fav="${i}">${esc(f.name.length > 28 ? f.name.slice(0, 26) + '…' : f.name)} · ${fmt(f.kcal)}</button>`).join('');
@@ -1284,7 +1265,7 @@ function updateSportForm() {
   if (r.km) parts.push(`${r.km.toLocaleString('de-AT')} km`);
   if (r.kcal) parts.push(`${r.est.includes('kcal') ? '≈ ' : ''}${fmt(r.kcal)} kcal`);
   if (r.min && r.km) parts.push(`Tempo ${(r.km / r.min * 60).toLocaleString('de-AT', { maximumFractionDigits: 1 })} km/h`);
-  hint.textContent = '→ ' + parts.join(' · ') + (r.est.length ? `  (geschätzt mit ${w ? fmtKg(w) + ' kg' : '75 kg – Gewicht im Profil eintragen'})` : '');
+  hint.textContent = '→ ' + parts.join(' · ') + (r.est.length ? `  (netto geschätzt mit ${w ? fmtKg(w) + ' kg' : '75 kg – Gewicht im Profil eintragen'})` : '');
 }
 ['sportMin', 'sportKm', 'sportKcal'].forEach(id => $(id).addEventListener('input', updateSportForm));
 $('sportIntensity').onchange = updateSportForm;
@@ -1369,13 +1350,13 @@ async function claudeModels() {
   const best = ids.find(i => /sonnet/i.test(i)) || ids.find(i => /haiku/i.test(i)) || ids[0] || 'claude-sonnet-4-5';
   return { models, order: [best] };
 }
-async function claudeRaw(text, image) {
+async function claudeRaw(text, image, system = NUTRI_SYSTEM) {
   const content = [];
   if (image) content.push({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: image } });
   content.push({ type: 'text', text });
   const run = m => claudeFetch('/v1/messages', {
     method: 'POST',
-    body: JSON.stringify({ model: m, max_tokens: 1200, system: NUTRI_SYSTEM, messages: [{ role: 'user', content }] })
+    body: JSON.stringify({ model: m, max_tokens: 1200, system, messages: [{ role: 'user', content }] })
   });
   let r;
   try { r = await run(await resolveModel()); }
@@ -1418,7 +1399,7 @@ async function gemModels() {
   const order = models.map(m => m.id).sort((a, b) => tier(a) - tier(b) || unstable(a) - unstable(b) || ver(b) - ver(a));
   return { models, order };
 }
-async function gemRaw(text, image) {
+async function gemRaw(text, image, system = NUTRI_SYSTEM) {
   let order = data.settings.gemModel ? [data.settings.gemModel] : (data.settings.gemOrder || []);
   if (!order.length) {
     try { order = (await gemModels()).order; data.settings.gemOrder = order.slice(0, 4); save(); }
@@ -1431,7 +1412,7 @@ async function gemRaw(text, image) {
   for (const m of order.slice(0, 4)) {
     try {
       const r = await gemFetch(`models/${m}:generateContent`, {
-        systemInstruction: { parts: [{ text: NUTRI_SYSTEM }] },
+        systemInstruction: { parts: [{ text: system }] },
         contents: [{ role: 'user', parts }],
         generationConfig: { temperature: 0.2, responseMimeType: 'application/json' }
       });
@@ -1497,7 +1478,7 @@ async function oaModels(pv) {
   return { models, order: order.length ? order : fb };
 }
 
-async function oaRaw(pv, text, image) {
+async function oaRaw(pv, text, image, system = NUTRI_SYSTEM) {
   const st = data.settings;
   let order = st[AI[pv].model] ? [st[AI[pv].model]] : (st[pv + 'Order'] || []);
   if (!order.length) {
@@ -1511,7 +1492,7 @@ async function oaRaw(pv, text, image) {
     try {
       const r = await oaFetch(pv, '/chat/completions', {
         model: m, temperature: 0.2, max_tokens: 1500,
-        messages: [{ role: 'system', content: NUTRI_SYSTEM }, { role: 'user', content }]
+        messages: [{ role: 'system', content: system }, { role: 'user', content }]
       });
       const out = r.choices && r.choices[0] && r.choices[0].message ? String(r.choices[0].message.content || '') : '';
       if (out) {
@@ -1544,11 +1525,11 @@ Antworte AUSSCHLIESSLICH mit einem JSON-Objekt ohne weiteren Text, exakt in dies
 {"name":"kurzer deutscher Name des Gerichts","items":[{"name":"Lebensmittel","grams":0,"kcal":0,"protein":0,"carbs":0,"fat":0}],"confidence":"niedrig|mittel|hoch","hinweis":"ein kurzer Satz, was die Schätzung unsicher macht, oder leer"}
 Nährwerte jeweils für die angegebene Menge, alle Zahlen als ganze Zahlen. Wenn kein Essen erkennbar ist: items leer lassen und im hinweis erklären.`;
 
-async function aiNutrition(prompt, image) {
+async function aiNutrition(prompt, image, system) {
   let text = '', via = '', firstErr = null;
   for (const pv of aiChain()) {
     try {
-      text = pv === 'gemini' ? await gemRaw(prompt, image) : pv === 'claude' ? await claudeRaw(prompt, image) : await oaRaw(pv, prompt, image);
+      text = pv === 'gemini' ? await gemRaw(prompt, image, system) : pv === 'claude' ? await claudeRaw(prompt, image, system) : await oaRaw(pv, prompt, image, system);
       via = AI[pv].name;
       if (text.match(/\{[\s\S]*\}/)) break;
     } catch (e) { firstErr = firstErr || e; }
@@ -1569,7 +1550,7 @@ async function aiNutrition(prompt, image) {
       kcal: Math.round(num(it.kcal)), protein: Math.round(num(it.protein)),
       carbs: Math.round(num(it.carbs)), fat: Math.round(num(it.fat))
     })),
-    confidence: j.confidence || '', hinweis: j.hinweis || '', via
+    confidence: j.confidence || '', hinweis: j.hinweis || '', via, raw: j
   };
 }
 
@@ -1607,104 +1588,145 @@ async function handleMealImage(ev) {
   const file = ev.target.files[0];
   ev.target.value = '';
   if (!file) return;
-  showLoading('KI analysiert die Mahlzeit …', 'Bild wird vorbereitet');
   let dataUrl = null;
+  try { dataUrl = await resizeImage(file, 1280); }
+  catch (e) { toast(e.message); return; }
+  const CHIPS = ['halbe Portion gegessen', 'ohne Sauce', 'in Öl/Butter gebraten', 'große Restaurant-Portion', 'Getränk dabei'];
+  openSheet(`<h2>📸 Foto analysieren</h2>
+    <img class="preview" src="${dataUrl}" alt="">
+    <div class="form-group"><label>Hinweis für die KI (optional)</label>
+      <textarea id="phHint" rows="2" placeholder="z. B. nur die Hälfte gegessen, Dressing extra, 2 Scheiben Brot"></textarea></div>
+    <div class="pill-row" style="margin-bottom:6px;">${CHIPS.map(c => `<button class="pill-btn" data-chip="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+    <div class="actions"><button class="btn-main secondary" data-x>Abbrechen</button><button class="btn-main" data-ok>✨ Analysieren</button></div>`, sh => {
+    const ta = sh.querySelector('#phHint');
+    sh.querySelectorAll('[data-chip]').forEach(b => b.onclick = () => { ta.value = (ta.value.trim() ? ta.value.trim() + ', ' : '') + b.dataset.chip; });
+    sh.querySelector('[data-x]').onclick = closeSheet;
+    sh.querySelector('[data-ok]').onclick = () => { const hint = ta.value.trim(); closeSheet(); analyzeMealPhoto(dataUrl, hint); };
+  });
+}
+
+async function analyzeMealPhoto(dataUrl, hint) {
+  showLoading('KI analysiert die Mahlzeit …', 'Nährwerte werden geschätzt');
   try {
-    dataUrl = await resizeImage(file, 1280);
-    $('loadingText').textContent = aiChain().length > 1 ? `Nährwerte werden geschätzt (${aiName()}, bei Überlastung automatisch ${aiChain().slice(1).map(p => AI[p].name).join(' / ')})` : 'Nährwerte werden geschätzt';
-    const r = await aiNutrition('Was ist auf diesem Foto? Liste die Lebensmittel mit Menge und Nährwerten der gezeigten Portion auf.', dataUrl.split(',')[1]);
+    if (aiChain().length > 1) $('loadingText').textContent = `Nährwerte werden geschätzt (${aiName()}, bei Überlastung automatisch ${aiChain().slice(1).map(p => AI[p].name).join(' / ')})`;
+    const prompt = 'Was ist auf diesem Foto? Liste die Lebensmittel mit Menge und Nährwerten der gezeigten Portion auf.' +
+      (hint ? ` Wichtiger Hinweis des Nutzers, unbedingt berücksichtigen: ${hint}` : '');
+    const r = await aiNutrition(prompt, dataUrl.split(',')[1]);
     hideLoading();
-    const note = [r.via && r.via !== aiName() ? `Ersatzweise von ${r.via} erkannt` : '', r.confidence ? `Sicherheit: ${r.confidence}` : '', r.hinweis].filter(Boolean).join(' – ');
+    const note = [r.via && r.via !== aiName() ? `Ersatzweise von ${r.via} erkannt` : '', hint ? `Hinweis: ${hint}` : '', r.confidence ? `Sicherheit: ${r.confidence}` : '', r.hinweis].filter(Boolean).join(' – ');
     foodSheet({ items: r.items, title: r.name, image: dataUrl, note: (note ? note + ' · ' : '') + 'Mengen prüfen, Fehlendes unten ergänzen.' });
   } catch (err) {
     hideLoading();
     foodSheet({ image: dataUrl, note: '⚠️ ' + err.message + ' Du kannst die Mahlzeit hier manuell eintragen.' });
   }
 }
+
+/* ---------- Barcode (Open Food Facts) ---------- */
+let scanStream = null, scanTimer = null;
+function stopScan() {
+  if (scanTimer) { clearInterval(scanTimer); scanTimer = null; }
+  if (scanStream) { scanStream.getTracks().forEach(t => t.stop()); scanStream = null; }
+}
+const BARCODE_FORMATS = ['ean_13', 'ean_8', 'upc_a', 'upc_e'];
+async function barcodeSupported() {
+  try { return 'BarcodeDetector' in window && (await BarcodeDetector.getSupportedFormats()).some(f => BARCODE_FORMATS.includes(f)); }
+  catch (e) { return false; }
+}
+
+function barcodeSheet() {
+  openSheet(`<h2>📦 Barcode scannen</h2>
+    <video class="scan-video" id="scanVideo" playsinline muted hidden></video>
+    <p class="hint" id="scanStatus" style="margin:0 0 10px;">Kamera wird gestartet …</p>
+    <div class="form-row">
+      <input id="eanInput" inputmode="numeric" placeholder="oder Nummer eintippen (EAN)">
+      <button class="btn-main" style="flex:none;width:auto;padding:0 14px;" id="eanGo">Suchen</button>
+    </div>
+    <button class="btn-ai" style="margin-top:10px;" id="eanPhoto">📷 Foto vom Barcode machen</button>
+    <input type="file" id="eanPhotoInput" accept="image/*" capture="environment" hidden>
+    <p class="hint">Nährwerte aus der freien Datenbank Open Food Facts. Nicht jedes Produkt ist dort erfasst.</p>
+    <div class="actions"><button class="btn-main secondary" data-x>Schließen</button></div>`, async sh => {
+    const q = sel => sh.querySelector(sel);
+    q('[data-x]').onclick = closeSheet;
+    q('#eanGo').onclick = () => { const c = q('#eanInput').value.replace(/\D/g, ''); if (c.length < 8) { toast('Bitte die ganze Nummer unter dem Strichcode eingeben.'); return; } lookupBarcode(c); };
+    q('#eanInput').addEventListener('keydown', e => { if (e.key === 'Enter') q('#eanGo').click(); });
+    q('#eanPhoto').onclick = () => q('#eanPhotoInput').click();
+    q('#eanPhotoInput').onchange = async ev => {
+      const f = ev.target.files[0]; ev.target.value = ''; if (!f) return;
+      q('#scanStatus').textContent = '⏳ Lese Barcode aus dem Foto …';
+      try {
+        const code = await readBarcodeFromImage(f);
+        if (code) lookupBarcode(code); else q('#scanStatus').textContent = 'Kein Barcode erkannt – bitte Nummer eintippen.';
+      } catch (e) { q('#scanStatus').textContent = e.message; }
+    };
+    if (!(await barcodeSupported()) || !navigator.mediaDevices) {
+      q('#scanStatus').textContent = 'Live-Scan ist auf diesem Gerät nicht verfügbar – mach ein Foto vom Barcode oder tippe die Nummer ein.';
+      return;
+    }
+    try {
+      scanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      const v = q('#scanVideo'); v.srcObject = scanStream; v.hidden = false; await v.play();
+      q('#scanStatus').textContent = 'Strichcode ins Bild halten …';
+      const det = new BarcodeDetector({ formats: BARCODE_FORMATS });
+      scanTimer = setInterval(async () => {
+        try {
+          const codes = await det.detect(v);
+          if (codes.length) { const c = codes[0].rawValue; stopScan(); try { navigator.vibrate && navigator.vibrate(80); } catch (e) {} lookupBarcode(c); }
+        } catch (e) {}
+      }, 350);
+    } catch (e) {
+      q('#scanStatus').textContent = 'Kein Kamerazugriff – mach ein Foto vom Barcode oder tippe die Nummer ein.';
+    }
+  });
+}
+$('btnBarcode').onclick = barcodeSheet;
+
+async function readBarcodeFromImage(file) {
+  if (await barcodeSupported()) {
+    try {
+      const bmp = await createImageBitmap(file);
+      const codes = await new BarcodeDetector({ formats: BARCODE_FORMATS }).detect(bmp);
+      if (codes.length) return codes[0].rawValue;
+    } catch (e) {}
+  }
+  if (!aiReady()) throw new Error('Barcode nicht erkannt – bitte Nummer eintippen.');
+  const dataUrl = await resizeImage(file, 1280);
+  const r = await aiNutrition('Lies die Ziffern unter dem Strichcode auf diesem Foto.', dataUrl.split(',')[1],
+    'Du liest Strichcode-Nummern (EAN/UPC) von Fotos. Antworte NUR mit JSON: {"ean":"nur die Ziffern"} oder {"ean":""}, wenn keine Nummer lesbar ist.')
+    .catch(() => null);
+  return r && r.raw && r.raw.ean ? String(r.raw.ean).replace(/\D/g, '') : '';
+}
+
+async function lookupBarcode(code) {
+  stopScan();
+  showLoading('Produkt wird gesucht …', 'EAN ' + code);
+  try {
+    const res = await fetch(`https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json?fields=product_name,product_name_de,brands,nutriments,serving_quantity,quantity`);
+    const j = await res.json();
+    hideLoading();
+    if (!j || j.status !== 1 || !j.product) {
+      closeSheet();
+      foodSheet({ note: `Produkt ${code} ist bei Open Food Facts nicht erfasst – bitte Werte von der Packung abschreiben.` });
+      return;
+    }
+    const pr = j.product, n = pr.nutriments || {};
+    const per100 = {
+      kcal: num(n['energy-kcal_100g'] ?? (n['energy_100g'] ? n['energy_100g'] / 4.184 : 0)),
+      protein: num(n.proteins_100g), carbs: num(n.carbohydrates_100g), fat: num(n.fat_100g)
+    };
+    const name = [pr.product_name_de || pr.product_name, pr.brands ? '(' + String(pr.brands).split(',')[0].trim() + ')' : ''].filter(Boolean).join(' ') || 'Produkt ' + code;
+    const grams = Math.round(num(pr.serving_quantity)) || 100;
+    const item = { name, grams };
+    ['kcal', 'protein', 'carbs', 'fat'].forEach(k => item[k] = Math.round(per100[k] * grams / 100));
+    closeSheet();
+    foodSheet({ items: [item], title: '', note: `Aus Open Food Facts · pro 100 g: ${fmt(per100.kcal)} kcal, P ${fmt(per100.protein)} · KH ${fmt(per100.carbs)} · F ${fmt(per100.fat)}. Menge anpassen – die Werte rechnen sich um.` });
+  } catch (e) {
+    hideLoading();
+    toast('Open Food Facts nicht erreichbar – bitte später nochmal.');
+  }
+}
+
 $('cameraImageInput').onchange = handleMealImage;
 $('galleryImageInput').onchange = handleMealImage;
-
-/* =====================================================================
-   RENDER: ÜBUNGEN
-   ===================================================================== */
-let activeTimer = null; // { id, remaining, total, handle }
-
-function beep() {
-  try {
-    const Ctx = window.AudioContext || window.webkitAudioContext;
-    const ctx = new Ctx(); const o = ctx.createOscillator(); const g = ctx.createGain();
-    o.frequency.value = 880; o.connect(g); g.connect(ctx.destination);
-    g.gain.setValueAtTime(0.0001, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + 0.01);
-    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.4);
-    o.start(); o.stop(ctx.currentTime + 0.45);
-  } catch (e) {}
-  try { if (navigator.vibrate) navigator.vibrate([150, 80, 150]); } catch (e) {}
-}
-const fmtSec = s => `${Math.floor(s / 60)}:${pad2(s % 60)}`;
-
-function setExDone(id, val) {
-  const day = getDay(viewDate, true);
-  day.ex = day.ex || { done: {}, counts: {} };
-  day.ex.done[id] = val;
-  save(); renderUebungen();
-}
-
-function toggleTimer(ex) {
-  if (activeTimer && activeTimer.id === ex.id) { clearInterval(activeTimer.handle); activeTimer = null; renderUebungen(); return; }
-  if (activeTimer) clearInterval(activeTimer.handle);
-  activeTimer = { id: ex.id, remaining: ex.timer, total: ex.timer };
-  activeTimer.handle = setInterval(() => {
-    activeTimer.remaining--;
-    const b = document.querySelector(`[data-timer="${ex.id}"]`);
-    if (b) b.textContent = '⏸ ' + fmtSec(activeTimer.remaining);
-    if (activeTimer.remaining <= 0) {
-      clearInterval(activeTimer.handle); activeTimer = null; beep();
-      setExDone(ex.id, true);
-      toast(`✅ ${ex.title} geschafft`);
-    }
-  }, 1000);
-  renderUebungen();
-}
-
-function renderUebungen() {
-  const day = getDay(viewDate);
-  const done = (day.ex && day.ex.done) || {};
-  const counts = (day.ex && day.ex.counts) || {};
-  const list = EXERCISES[currentSub];
-  const meta = EX_META[currentSub];
-  document.querySelectorAll('#exSubtabs button').forEach(b => b.classList.toggle('active', b.dataset.sub === currentSub));
-  $('exIntroText').textContent = meta.intro;
-  $('exCount').textContent = `${list.filter(e => done[e.id]).length}/${list.length}`;
-  let html = '', lastPhase = null;
-  list.forEach((ex, i) => {
-    if (ex.phase && ex.phase !== lastPhase) { html += `<div class="phase-label">${PHASE_LABELS[ex.phase]}</div>`; lastPhase = ex.phase; }
-    const running = activeTimer && activeTimer.id === ex.id;
-    html += `<div class="card ex-card ${done[ex.id] ? 'done' : ''}">
-      <div class="ex-badge" style="background:${meta.color}">${i + 1}</div>
-      <div class="ex-body">
-        <div class="ex-head"><h3>${esc(ex.title)}</h3><span class="chip">${esc(ex.meta)}${ex.optional ? ' · optional' : ''}</span></div>
-        <ol class="steps">${ex.steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>
-        <div class="ex-controls">
-          <label class="check" style="color:${meta.color}"><input type="checkbox" data-done="${ex.id}" ${done[ex.id] ? 'checked' : ''}> Erledigt</label>
-          ${ex.timer ? `<button class="timer-btn" style="background:${meta.color}" data-timer="${ex.id}">${running ? '⏸ ' + fmtSec(activeTimer.remaining) : '▶ ' + fmtSec(ex.timer)}</button>` : ''}
-          ${ex.counter ? `<div class="counter"><button data-cnt="${ex.id}" data-d="-1">−</button><span class="n num">${counts[ex.id] || 0}</span><button data-cnt="${ex.id}" data-d="1">+</button></div>` : ''}
-        </div>
-      </div></div>`;
-  });
-  $('exList').innerHTML = html;
-  $('exList').querySelectorAll('[data-done]').forEach(c => c.onchange = () => setExDone(c.dataset.done, c.checked));
-  $('exList').querySelectorAll('[data-timer]').forEach(b => b.onclick = () => toggleTimer(list.find(e => e.id === b.dataset.timer)));
-  $('exList').querySelectorAll('[data-cnt]').forEach(b => b.onclick = () => {
-    const d = getDay(viewDate, true); d.ex = d.ex || { done: {}, counts: {} };
-    d.ex.counts[b.dataset.cnt] = Math.max(0, (d.ex.counts[b.dataset.cnt] || 0) + +b.dataset.d);
-    save(); renderUebungen();
-  });
-  const sum = exerciseSummary(viewDate);
-  $('exMinutes').textContent = `${String(sum.min).replace('.', ',')} Min`;
-  $('exKcal').textContent = `${fmt(sum.kcal)} kcal`;
-}
-document.querySelectorAll('#exSubtabs button').forEach(b => b.onclick = () => { currentSub = b.dataset.sub; renderUebungen(); });
 
 /* =====================================================================
    RENDER: VERLAUF (Diagramme)
@@ -1739,7 +1761,8 @@ function barChart(el, items, opts) {
   items.forEach((it, i) => {
     const x = L + slot * i + (slot - bw) / 2;
     const over = opts.target && opts.overIsBad && it.v > opts.target + (it.allow || 0);
-    svg += `<path d="${barPath(x, y(it.v), bw, T + ih - y(it.v), 4)}" fill="${over ? 'var(--danger)' : opts.color}"/>`;
+    if (it.missing) svg += `<text x="${x + bw / 2}" y="${T + ih - 4}" text-anchor="middle" style="font-size:11px">?</text>`;
+    else svg += `<path d="${barPath(x, y(it.v), bw, T + ih - y(it.v), 4)}" fill="${over ? 'var(--danger)' : opts.color}"/>`;
     svg += `<text x="${x + bw / 2}" y="${H - 6}" text-anchor="middle" ${it.today ? 'style="fill:var(--text);font-weight:700"' : ''}>${esc(it.label)}</text>`;
     svg += `<rect class="hit" data-i="${i}" x="${L + slot * i}" y="${T}" width="${slot}" height="${ih + B}"/>`;
   });
@@ -1751,7 +1774,7 @@ function barChart(el, items, opts) {
   el.innerHTML = svg + `<div class="cap">${opts.caption || ''}</div>`;
   const cap = el.querySelector('.cap');
   el.querySelectorAll('.hit').forEach(h => {
-    const show = () => { const it = items[+h.dataset.i]; cap.innerHTML = `${esc(it.long)}: <b>${fmt(it.v)} ${opts.unit}</b>${it.extra ? ' · ' + esc(it.extra) : ''}`; };
+    const show = () => { const it = items[+h.dataset.i]; cap.innerHTML = it.missing ? `${esc(it.long)}: <b>nicht erfasst</b>` : `${esc(it.long)}: <b>${fmt(it.v)} ${opts.unit}</b>${it.extra ? ' · ' + esc(it.extra) : ''}`; };
     h.addEventListener('mouseenter', show); h.addEventListener('click', show);
   });
 }
@@ -1775,7 +1798,9 @@ function lineChart(el, all, o) {
   let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.label)}">`;
   [lo, (lo + hi) / 2, hi].forEach(g => { svg += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(g)}" y2="${y(g)}"/><text x="${L - 6}" y="${y(g) + 3}" text-anchor="end">${o.fmt(g)}</text>`; });
   if (goal) svg += `<line class="target" x1="${L}" x2="${W - R}" y1="${y(goal)}" y2="${y(goal)}"/><text x="${W - R}" y="${y(goal) - 4}" text-anchor="end">Ziel ${o.fmt(goal)}</text>`;
-  svg += `<polyline fill="none" stroke="${o.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="${pts.map(p => `${x(p.date)},${y(v(p))}`).join(' ')}"/>`;
+  const tr = o.trend && pts.length >= 3 ? pts.map(p => ({ date: p.date, val: trendValue(all, o.key, p.date) })) : null;
+  svg += `<polyline fill="none" stroke="${o.color}" stroke-width="${tr ? 1.5 : 2}" ${tr ? 'stroke-opacity="0.45"' : ''} stroke-linejoin="round" stroke-linecap="round" points="${pts.map(p => `${x(p.date)},${y(v(p))}`).join(' ')}"/>`;
+  if (tr) svg += `<polyline fill="none" stroke="${o.color}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" points="${tr.map(p => `${x(p.date)},${y(p.val)}`).join(' ')}"/>`;
   pts.forEach((p, i) => {
     const last = i === pts.length - 1;
     if (last || pts.length <= 20) svg += `<circle cx="${x(p.date)}" cy="${y(v(p))}" r="${last ? 4.5 : 3}" fill="${o.color}" stroke="var(--card-bg)" stroke-width="2"/>`;
@@ -1784,7 +1809,7 @@ function lineChart(el, all, o) {
   svg += `<line class="grid cross" x1="0" x2="0" y1="${T}" y2="${T + ih}" style="display:none"/>`;
   svg += `<rect class="hit" x="${L}" y="${T}" width="${iw}" height="${ih}"/></svg>`;
   const last = pts[pts.length - 1];
-  el.innerHTML = svg + `<div class="cap">Zuletzt ${dayLabel(last.date, true)}: <b>${o.fmt(v(last))} ${o.unit}</b></div>`;
+  el.innerHTML = svg + `<div class="cap">Zuletzt ${dayLabel(last.date, true)}: <b>${o.fmt(v(last))} ${o.unit}</b>${tr ? ` · Trend <b>${o.fmt(tr[tr.length - 1].val)} ${o.unit}</b><br><small>dicke Linie = 7-Tage-Trend (glättet Tagesschwankungen)</small>` : ''}</div>`;
   const svgEl = el.querySelector('svg'), cap = el.querySelector('.cap'), cross = el.querySelector('.cross');
   const hit = el.querySelector('.hit');
   const show = ev => {
@@ -1794,20 +1819,78 @@ function lineChart(el, all, o) {
     pts.forEach(p => { if (Math.abs(x(p.date) - cx) < Math.abs(x(best.date) - cx)) best = p; });
     cross.setAttribute('x1', x(best.date)); cross.setAttribute('x2', x(best.date)); cross.style.display = '';
     const diff = v(best) - v(pts[0]);
-    cap.innerHTML = `${dayLabel(best.date, true)}: <b>${o.fmt(v(best))} ${o.unit}</b>${best !== pts[0] ? ` · ${diff > 0 ? '+' : ''}${o.fmt(diff)} seit ${dayLabel(pts[0].date)}` : ''}`;
+    cap.innerHTML = `${dayLabel(best.date, true)}: <b>${o.fmt(v(best))} ${o.unit}</b>${tr ? ` · Trend ${o.fmt(trendValue(all, o.key, best.date))}` : ''}${best !== pts[0] ? ` · ${diff > 0 ? '+' : ''}${o.fmt(diff)} seit ${dayLabel(pts[0].date)}` : ''}`;
   };
   hit.addEventListener('mousemove', show); hit.addEventListener('click', show);
   hit.addEventListener('touchstart', show, { passive: true }); hit.addEventListener('touchmove', show, { passive: true });
 }
 const fmtCm = n => (Math.round(n * 10) / 10).toLocaleString('de-AT', { maximumFractionDigits: 1 });
+// Durchschnitt aller Messungen der 7 Tage bis einschließlich k (oder letzte Messung davor)
+function trendValue(list, key, k) {
+  const from = addDays(k, -6);
+  const win = list.filter(p => p.date >= from && p.date <= k);
+  if (win.length) return win.reduce((a, p) => a + p[key], 0) / win.length;
+  const before = list.filter(p => p.date <= k);
+  return before.length ? before[before.length - 1][key] : null;
+}
 function weightChart(el) {
-  lineChart(el, data.weights, { key: 'kg', unit: 'kg', fmt: fmtKg, goal: data.profile.goalWeight, color: 'var(--primary)', label: 'Gewichtsverlauf', empty: 'Trag im Profil dein Gewicht ein, um den Verlauf zu sehen.' });
+  lineChart(el, data.weights, { trend: true, key: 'kg', unit: 'kg', fmt: fmtKg, goal: data.profile.goalWeight, color: 'var(--primary)', label: 'Gewichtsverlauf', empty: 'Trag im Profil dein Gewicht ein, um den Verlauf zu sehen.' });
 }
 function waistChart(el) {
   lineChart(el, data.waists || [], { key: 'cm', unit: 'cm', fmt: fmtCm, goal: data.profile.goalWaist, color: 'var(--water)', label: 'Bauchumfang', empty: 'Trag im Profil deinen Bauchumfang ein, um den Verlauf zu sehen.' });
 }
 
+let reportWeek = -1;
+function weekReport(offset) {
+  const t = todayKey();
+  const ws = addDays(weekStart(t), offset * 7);
+  const we = offset === 0 ? t : addDays(ws, 6);
+  const keys = []; for (let k = ws; k <= we; k = addDays(k, 1)) keys.push(k);
+  const tg = calcTargets(we);
+  const logged = keys.filter(hasFood);
+  const sums = logged.map(daySums);
+  const all = keys.map(daySums);
+  const avg = f => sums.length ? sums.reduce((a, s) => a + f(s), 0) / sums.length : 0;
+  const sportKcalSum = all.reduce((a, s) => a + s.burned, 0);
+  const sportMin = all.reduce((a, s) => a + s.sportMin, 0);
+  const sportDays = all.filter(s => s.burned > 0).length;
+  const lowDays = sums.filter(s => s.food < 1000).length;
+  const tNow = trendValue(data.weights, 'kg', we), tPrev = trendValue(data.weights, 'kg', addDays(ws, -1));
+  const dW = tNow != null && tPrev != null ? tNow - tPrev : null;
+  const wsList = data.waists || [];
+  const waistNow = wsList.filter(x => x.date <= we).slice(-1)[0], waistPrev = wsList.filter(x => x.date < ws).slice(-1)[0];
+  const missing = keys.filter(k => !hasFood(k) && k !== t);
+  const tips = [];
+  if (missing.length) tips.push(`📅 An ${missing.length} ${missing.length === 1 ? 'Tag' : 'Tagen'} fehlen Einträge (${missing.map(k => WD[parseKey(k).getDay()]).join(', ')}) – die Bilanz ist dadurch unsicher.`);
+  if (sums.length && avg(s => s.p) < tg.protein * 0.8) tips.push(`🥚 Eiweiß im Schnitt ${fmt(avg(s => s.p))} g – Ziel ${fmt(tg.protein)} g. Mehr Eiweiß schützt die Muskeln beim Abnehmen.`);
+  if (lowDays >= 2) tips.push(`⚠️ ${lowDays} Tage unter 1.000 kcal – lieber gleichmäßig essen, sonst drohen Heißhunger und Muskelabbau.`);
+  if (dW != null && tNow && -dW / tNow > 0.01) tips.push('🏃 Du nimmst schneller ab als ca. 1 % pro Woche – etwas mehr essen schont die Muskeln.');
+  else if (dW != null && dW >= 0 && logged.length >= 5 && avg(s => s.food - s.burned) < tg.kcal) tips.push('🤔 Trend stagniert trotz Defizit laut Einträgen – oft fehlen Getränke, Öl, Snacks oder Restaurant-Essen in den Einträgen. Oder Wasser hält gerade das Gewicht.');
+  else if (dW != null && dW < 0) tips.push('👍 Gewichtstrend geht nach unten – weiter so.');
+  if (!data.weights.some(x => x.date >= ws && x.date <= we)) tips.push('⚖️ Diese Woche keine Wiegung – für einen verlässlichen Trend 3–7× pro Woche wiegen.');
+  const line = (l, v) => `<div class="stat-line"><span>${l}</span><b>${v}</b></div>`;
+  return {
+    range: `KW ${isoWeek(ws)} · ${parseKey(ws).getDate()}.${parseKey(ws).getMonth() + 1}.–${parseKey(we).getDate()}.${parseKey(we).getMonth() + 1}.`,
+    html: (logged.length || data.weights.length ? [
+      line('Erfasste Tage', `${logged.length} von ${keys.length}`),
+      sums.length ? line('Ø gegessen (erfasste Tage)', `${fmt(avg(s => s.food))} kcal <small style="color:var(--text-muted)">Ziel ${fmt(tg.kcal)}</small>`) : '',
+      sums.length ? line('Ø Eiweiß', `${fmt(avg(s => s.p))} g <small style="color:var(--text-muted)">Ziel ${fmt(tg.protein)}</small>`) : '',
+      line('Sport', `${fmt(sportKcalSum)} kcal · ${fmt(sportMin)} Min · ${sportDays} Tage`),
+      dW != null ? line('Gewicht (7-Tage-Trend)', `${fmtKg(tNow)} kg <small style="color:${dW <= 0 ? 'var(--success)' : 'var(--danger)'}">${dW > 0 ? '+' : ''}${fmtKg(dW)} kg</small>`) : '',
+      waistNow ? line('Bauchumfang', `${fmtCm(waistNow.cm)} cm${waistPrev ? ` <small>${waistNow.cm - waistPrev.cm > 0 ? '+' : ''}${fmtCm(waistNow.cm - waistPrev.cm)} cm</small>` : ''}`) : ''
+    ].join('') + tips.map(x => `<div class="report-tip">${x}</div>`).join('') : '<p class="empty">Für diese Woche gibt es noch keine Einträge.</p>')
+  };
+}
+function renderReport() {
+  document.querySelectorAll('#reportSeg button').forEach(b => b.classList.toggle('active', +b.dataset.week === reportWeek));
+  const r = weekReport(reportWeek);
+  $('reportRange').textContent = r.range;
+  $('weekReport').innerHTML = r.html;
+}
+document.querySelectorAll('#reportSeg button').forEach(b => b.onclick = () => { reportWeek = +b.dataset.week; renderReport(); });
+
 function renderVerlauf() {
+  renderReport();
   const t = todayKey();
   const keys = []; for (let i = 6; i >= 0; i--) keys.push(addDays(t, -i));
   const sums = keys.map(k => daySums(k));
@@ -1816,21 +1899,21 @@ function renderVerlauf() {
   const items = keys.map((k, i) => {
     const s = sums[i], d = parseKey(k);
     const base = { label: WD[d.getDay()], long: dayLabel(k, true), today: k === t };
-    if (chartMode === 'kcal') return Object.assign(base, { v: s.food, allow: s.burned, extra: s.burned ? `Sport −${fmt(s.burned)} kcal` : '' });
+    if (chartMode === 'kcal') return Object.assign(base, { v: s.food, missing: !hasFood(k) && k !== t, allow: s.burned, extra: s.burned ? `Sport −${fmt(s.burned)} kcal` : '' });
     if (chartMode === 'water') return Object.assign(base, { v: s.water });
     return Object.assign(base, { v: s.burned, extra: (s.sportMin + s.exMin) ? `${fmt(s.sportMin + s.exMin)} Min` : '' });
   });
   const cfg = {
-    kcal: { color: 'var(--food)', unit: 'kcal', target: tg.kcal, overIsBad: true, label: 'Kalorien gegessen, letzte 7 Tage', caption: `Gegessen pro Tag · gestrichelt = Ziel ${fmt(tg.kcal)} kcal · rot = über Ziel + Sport` },
+    kcal: { color: 'var(--food)', unit: 'kcal', target: tg.kcal, overIsBad: true, label: 'Kalorien gegessen, letzte 7 Tage', caption: `Gegessen pro Tag · gestrichelt = Ziel ${fmt(tg.kcal)} kcal · rot = über Ziel + Sport · ? = nicht erfasst` },
     water: { color: 'var(--water)', unit: 'ml', target: data.profile.targetWater || 2500, label: 'Wasser, letzte 7 Tage', caption: `Wasser pro Tag · gestrichelt = Ziel ${fmt(data.profile.targetWater || 2500)} ml` },
-    sport: { color: 'var(--success)', unit: 'kcal', label: 'Sport-Kalorien, letzte 7 Tage', caption: 'Verbrannte kcal durch Sport & Übungen' }
+    sport: { color: 'var(--success)', unit: 'kcal', label: 'Sport-Kalorien, letzte 7 Tage', caption: 'Verbrannte kcal durch Sport' }
   }[chartMode];
   barChart($('weekChart'), items, cfg);
   weightChart($('weightChart'));
   waistChart($('waistChart'));
 
   // Durchschnitt nur über Tage mit Einträgen
-  const logged = sums.filter(s => s.food > 0);
+  const logged = keys.map((k, i) => hasFood(k) ? sums[i] : null).filter(Boolean);
   const avg = f => logged.length ? logged.reduce((a, s) => a + f(s), 0) / logged.length : 0;
   const avgW = sums.reduce((a, s) => a + s.water, 0) / 7;
   const sportDays = sums.filter(s => s.burned > 0).length;
@@ -1838,14 +1921,17 @@ function renderVerlauf() {
     <div class="stat-line"><span>Gegessen (Ø an ${logged.length} erfassten Tagen)</span><b>${fmt(avg(s => s.food))} kcal</b></div>
     <div class="stat-line"><span>Protein Ø</span><b>${fmt(avg(s => s.p))} g</b></div>
     <div class="stat-line"><span>Wasser Ø</span><b>${fmt(avgW)} ml</b></div>
-    <div class="stat-line"><span>Tage mit Sport/Übungen</span><b>${sportDays} von 7</b></div>
+    <div class="stat-line"><span>Tage mit Sport</span><b>${sportDays} von 7</b></div>
     <div class="stat-line"><span>Bilanz gegenüber Ziel (Summe)</span><b>${(() => { const b = logged.reduce((a, s) => a + s.food - s.burned - tg.kcal, 0); return (b > 0 ? '+' : '') + fmt(b); })()} kcal</b></div>`
     : '<p class="empty">Noch keine Mahlzeiten in den letzten 7 Tagen.</p>';
 
-  // Tagesliste
-  const dayKeys = Object.keys(data.days).filter(k => k <= t).sort().reverse().slice(0, 30);
+  // Tagesliste: letzte 30 Tage ab dem ersten Eintrag, Lücken sichtbar
+  const firstKey = Object.keys(data.days).sort()[0];
+  const dayKeys = [];
+  if (firstKey) for (let i = 0; i < 30; i++) { const k = addDays(t, -i); if (k < firstKey) break; dayKeys.push(k); }
   $('dayList').innerHTML = dayKeys.length ? dayKeys.map(k => {
     const s = daySums(k);
+    if (!hasFood(k) && k !== t) return `<div class="day-row missing" data-day="${k}"><span class="d">${dayLabel(k, true)}</span><span>nicht erfasst</span><span></span><span>${s.water ? (s.water / 1000).toLocaleString('de-AT', { maximumFractionDigits: 1 }) + ' l' : ''}</span></div>`;
     return `<div class="day-row" data-day="${k}"><span class="d">${dayLabel(k, true)}</span>
       <span class="c-food num">${fmt(s.food)} kcal</span><span class="c-sport num">${s.burned ? '−' + fmt(s.burned) : '–'}</span><span class="c-water num">${(s.water / 1000).toLocaleString('de-AT', { maximumFractionDigits: 1 })} l</span></div>`;
   }).join('') : '<p class="empty">Noch keine Tage erfasst.</p>';
@@ -1909,6 +1995,7 @@ function renderProfil() {
     <div class="stat-line"><span>Kohlenhydrate</span><b>${fmt(tg.carbs)} g</b></div>
     <div class="stat-line"><span>Fett</span><b>${fmt(tg.fat)} g</b></div>`;
 
+  $('persistStatus').textContent = persistState === 'ja' ? '🔒 Der Browser hält deine Daten dauerhaft fest.' : persistState === 'nein' ? '⚠️ Der Browser könnte die Daten bei Speichermangel löschen – als App am Startbildschirm installieren und regelmäßig sichern.' : '';
   $('lastBackup').textContent = data.lastBackup ? `Letzte Sicherung: ${dayLabel(data.lastBackup, true)}` : 'Noch keine Sicherung erstellt.';
   $('installHint').hidden = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 }
@@ -1925,29 +2012,37 @@ bindProfile('pOverride', 'override', el => el.checked);
 bindProfile('pTargetCal', 'targetCal', el => num(el.value) || 2200);
 bindProfile('pWater', 'targetWater', el => num(el.value) || 2500);
 
+function measureDate(id) {
+  const v = $(id).value || todayKey();
+  if (v > todayKey()) { toast('Das Datum liegt in der Zukunft.'); return null; }
+  return v;
+}
+['weightDate', 'waistDate'].forEach(id => { $(id).value = todayKey(); $(id).max = todayKey(); });
 $('btnAddWeight').onclick = () => {
   const kg = num($('weightInput').value);
   if (!kg || kg < 30 || kg > 300) { toast('Bitte ein gültiges Gewicht eingeben.'); return; }
-  const k = todayKey();
+  const k = measureDate('weightDate');
+  if (!k) return;
   data.weights = data.weights.filter(w => w.date !== k);
   data.weights.push({ date: k, kg });
   data.weights.sort((a, b) => a.date.localeCompare(b.date));
-  $('weightInput').value = '';
+  $('weightInput').value = ''; $('weightDate').value = todayKey();
   save(); renderAll();
-  toast(`⚖️ ${fmtKg(kg)} kg gespeichert`);
+  toast(`⚖️ ${fmtKg(kg)} kg für ${dayLabel(k, true)} gespeichert`);
 };
 
 bindProfile('pGoalWaist', 'goalWaist', el => num(el.value) || null);
 $('btnAddWaist').onclick = () => {
   const cm = num($('waistInput').value);
   if (!cm || cm < 40 || cm > 250) { toast('Bitte einen gültigen Bauchumfang in cm eingeben.'); return; }
-  const k = todayKey();
+  const k = measureDate('waistDate');
+  if (!k) return;
   data.waists = (data.waists || []).filter(w => w.date !== k);
   data.waists.push({ date: k, cm });
   data.waists.sort((a, b) => a.date.localeCompare(b.date));
-  $('waistInput').value = '';
+  $('waistInput').value = ''; $('waistDate').value = todayKey();
   save(); renderAll();
-  toast(`📏 ${fmtCm(cm)} cm gespeichert`);
+  toast(`📏 ${fmtCm(cm)} cm für ${dayLabel(k, true)} gespeichert`);
 };
 
 const modelKey = () => AI[prov()].model;
@@ -2078,10 +2173,22 @@ function renderAll() {
   $('dateLabel').textContent = dayLabel(viewDate);
   $('nextDay').disabled = viewDate >= t;
   if (currentTab === 'heute') renderHeute();
-  else if (currentTab === 'uebungen') renderUebungen();
   else if (currentTab === 'verlauf') renderVerlauf();
   else if (currentTab === 'profil') renderProfil();
 }
+
+// Browser bitten, die Daten dauerhaft zu behalten (nicht bei Speichermangel löschen)
+let persistState = 'unbekannt';
+(async () => {
+  try {
+    if (navigator.storage && navigator.storage.persist) {
+      let ok = await navigator.storage.persisted();
+      if (!ok) ok = await navigator.storage.persist();
+      persistState = ok ? 'ja' : 'nein';
+    } else persistState = 'nicht unterstützt';
+  } catch (e) { persistState = 'nicht unterstützt'; }
+  if (currentTab === 'profil') renderProfil();
+})();
 
 fixZeroSportEntries();
 AI_ORDER.forEach(pv => { const k = AI[pv].key; if (data.settings[k] && data.settings[k] !== cleanKey(data.settings[k])) { data.settings[k] = cleanKey(data.settings[k]); save(); } });
